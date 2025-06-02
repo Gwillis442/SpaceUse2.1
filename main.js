@@ -78,9 +78,9 @@ ipcMain.on('toMain', function(event, sname){
   //Store the Surveyor's name in the global Array
   let Surveyor = {'Surveyor': sname};
   global.shared.surveyArray.push(Surveyor);
-  let f1 = {'Floor One': []};
-  let f2 = {'Floor Two': []};
-  let f3 = {'Floor Three': []};
+  let f1 = {'Floor 1': []};
+  let f2 = {'Floor 2': []};
+  let f3 = {'Floor 3': []};
   let a = {'Areas': []};
   global.shared.surveyArray.push(f1);
   global.shared.surveyArray.push(f2);
@@ -107,9 +107,9 @@ ipcMain.on('SaveFurniture', function(event, furnMap, sfloor){
   var curfloor = "";
 
   switch(sfloor){
-    case 1: curfloor = "Floor One"; break;
-    case 2: curfloor = "Floor Two"; break;
-    case 3: curfloor = "Floor Three"; break;
+    case 1: curfloor = "Floor 1"; break;
+    case 2: curfloor = "Floor 2"; break;
+    case 3: curfloor = "Floor 3"; break;
   }
   //get floor data from furn map
 

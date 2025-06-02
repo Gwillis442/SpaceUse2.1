@@ -37,7 +37,7 @@ var temp_seat_places = [];
 const floorBtn = document.getElementById('submitFloor');
 const surveyfloorBtn = document.getElementById('subsurveyFloor');
 const msurveyfloorBtn = document.getElementById('msubsurveyFloor');
-const layoutfloorBtn = document.getElementById('layfloor');
+const layoutfloorBtn = document.getElementById('layoutFloor');
 const layoutDrawBtn = document.getElementById('drawArea');
 const layoutSaveFloor = document.getElementById('saveLayFloor');
 const layoutSaveLay = document.getElementById('saveLayout');
@@ -45,7 +45,11 @@ const layoutSaveLay = document.getElementById('saveLayout');
 //Add Floor to Global JSON
 floorBtn.addEventListener('click', function (event){
     event.preventDefault() // stop the form from submitting
-    sfloor = document.getElementById("floor").value;
+    const floorSelect = document.getElementById("floor");
+    imagepath = floorSelect.value;
+    const selectedOption = floorSelect.options[floorSelect.selectedIndex];
+    sfloor = selectedOption.getAttribute('data-id');
+    sfloorName = selectedOption.textContent;
     isSurvey = false;
     isMulti = false;
     isLayoutEdit = false;
@@ -59,7 +63,11 @@ surveyfloorBtn.addEventListener('click', function (event){
     isSurvey = true;
     isMulti = false;
     isLayoutEdit = false;
-    sfloor = document.getElementById("sfloor").value;
+    const floorSelect = document.getElementById("surveyFloor");
+    imagepath = floorSelect.value;
+    const selectedOption = floorSelect.options[floorSelect.selectedIndex];
+    sfloor = parseInt(selectedOption.getAttribute('data-id'));
+    sfloorName = selectedOption.textContent;
     mapView.style.display = "block";
     addMapPic();
 
@@ -68,7 +76,11 @@ surveyfloorBtn.addEventListener('click', function (event){
 msurveyfloorBtn.addEventListener('click', function (event){
     event.preventDefault();
     mapView.style.display = "block";
-    sfloor = document.getElementById('msfloor').value;
+    const floorSelect = document.getElementById("msurveyFloor");
+    imagepath = floorSelect.value;
+    const selectedOption = floorSelect.options[floorSelect.selectedIndex];
+    
+    sfloorName = selectedOption.textContent;
     isMulti = true;
     isSurvey = false;
     isLayoutEdit = false;
@@ -78,7 +90,11 @@ msurveyfloorBtn.addEventListener('click', function (event){
 layoutfloorBtn.addEventListener('click', function(event){
     event.preventDefault();
     mapView.style.display = "block";
-    sfloor = document.getElementById('layfloor').value;
+    const floorSelect = document.getElementById("layoutFloor");
+    imagepath = floorSelect.value;
+    const selectedOption = floorSelect.options[floorSelect.selectedIndex];
+    sfloor = parseInt(selectedOption.getAttribute('data-id'));
+    sfloorName = selectedOption.textContent;
     isLayoutEdit = true;
     isSurvey = false;
     isMulti = false;
@@ -552,26 +568,6 @@ function addMapPic(){
 
 
     //TODO:: Eventually replace this code with a dynamic file picker
-    sfloor = parseInt(sfloor);
-    let sfloorName = "";
-    switch(sfloor){
-        case 0:
-            imagepath = "";
-            break;
-        case 1:
-            imagepath = "./images/floor1.svg";
-            sfloorName = "Floor 1";
-            break;
-        case 2:
-            imagepath = "./images/floor2.svg";
-            sfloorName = "Floor 2";
-            break;
-        case 3:
-            imagepath = "./images/floor3.svg";
-            sfloorName = "Floor 3";
-            break;
-    }
-
     if(sfloor != '' && imagepath != ''){
         image = L.imageOverlay(imagepath, bounds);
         image.addTo(mymap);
@@ -588,7 +584,7 @@ function addMapPic(){
         else if(isSurvey === true){
             let surveydata = global.survey[sfloor];
             let surveyareadata = global.survey[4][1][1][sfloorName];
-            SurveyStartTime = global.survey[5][1]["Time Start"];
+            SurveyStartTime = global.survey[5][1]["Time Start"];            
             SurveyEndTime = global.survey[6][1]["Time End"];
             let floor = surveydata[1];
             let surv_array = [];

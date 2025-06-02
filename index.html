@@ -61,21 +61,13 @@
     
     <!--FLOOR MENU FOR SURVEY VIEW-->
     <div id="surveyFloorSelect">
-      <select name="floors" id="sfloor">
-        <option value="1">Floor 1</option>
-        <option value="2">Floor 2</option>
-        <option value="3">Floor 3</option>
-      </select>
+      <select name="floors" id="surveyFloor"></select>
       <button id="subsurveyFloor">Choose Floor</button>
     </div>
 
     <!--ANALYSIS MENU-->
     <div id="msurveyFloorSelect">
-      <select name="floors" id="msfloor">
-        <option value="1">Floor 1</option>
-        <option value="2">Floor 2</option>
-        <option value="3">Floor 3</option>
-      </select>
+      <select name="floors" id="msurveyFloor"></select>
       <button id="msubsurveyFloor">Choose Floor</button>
     </div>
 
@@ -84,11 +76,7 @@
       <!--get Image for Layout-->
       <button id="getImage">Upload Floorplan</button>
       <!--Select Furniture to be placed-->
-      <select name="floors" id="layfloor">
-        <option value="1">Floor 1</option>
-        <option value="2">Floor 2</option>
-        <option value="3">Floor 3</option>
-      </select>
+      <select name="floors" id="layoutFloor"></select>      
       <!--Make this Dynamic IN Future as a select with ICONS -->
       <select name="furniture-select" id="furn_icons">
         <option value="4">Rectangle Table </option>
@@ -155,6 +143,6 @@
     <script src="mapscripts/layout_builder.js"></script>
     <script src="mapscripts/popup_helpers.js"></script>
     <script src="mapscripts/leaflet.rotatedMarker.js"></script>
-    <script src="scripts.js\floor_Select.js"></script>
+    <script src="scripts\floor_Select.js"></script>
   </body>
 </html>
