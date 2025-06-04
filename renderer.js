@@ -124,12 +124,16 @@ dsurvey.addEventListener('click', ()=>{
 //Functions for Rendering Custom Layout
 layoutBuilder.addEventListener('click', ()=>{
     layoutMenu.style.display = "block";
-    getImage.disabled = true;
+    getImage.disabled = false;
     surveyBtn.disabled = true;
     loadSurvey.disabled = true;
     showMultiSurvey.disabled = true;
     drawArea.disabled = true;
     ipcRenderer.send('layoutCreate');
+});
+
+getImage.addEventListener('click', ()=>{
+    ipcRenderer.send('UploadFloorplan');
 });
 
 ipcRenderer.on('LoadDirectorySurveySuccess', function(event, data){
@@ -196,6 +200,41 @@ ipcRenderer.on('SaveSuccess', ()=>{
     layoutBuilder.disabled = false;
     isMulti = false;
     isSurvey = false;
+});
+
+ipcRenderer.on('UploadFloorplanSuccess', function(event, floorplanData){
+    console.log('Floorplan uploaded successfully:', floorplanData);
+    alert('Floorplan uploaded successfully: ' + floorplanData.name);
+
+    fetch('./scripts/floorplans.json')
+    .then(response => response.json())
+    .then(floorsplans => {
+
+        const newFloorplan = {
+            name: floorplanData.name,
+            image: floorplanData.image,
+            id: floorsplans.length + 1 
+        };
+        console.log('newFloorplan Data:', newFloorplan);
+        floorsplans.push(newFloorplan);
+
+        ipcRenderer.send('UpdateFloorplans', floorsplans);
+
+        console.log('Updated floorplans:', floorsplans);
+    })
+});
+
+ipcRenderer.on('UpdateFloorplansSuccess', function(event){
+    console.log('Floorplans JSON updated successfully');
+    populateFloorSelect("floor");
+    populateFloorSelect("surveyFloor");
+    populateFloorSelect("msurveyFloor");
+    populateFloorSelect("layoutFloor");
+});
+
+ipcRenderer.on('UpdateFloorplansError', function(event, errorMessage){
+    console.error('Failed to update floorplans.json:', errorMessage);
+    alert('Failed to update floor plans list: ' + errorMessage);
 });
 
     

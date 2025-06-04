@@ -6,7 +6,7 @@ async function populateFloorSelect(selectId) {
     console.error(`Select element with ID ${selectId} not found.`);
     return;
   }
-  const response = await fetch('./scripts/layouts.json');
+  const response = await fetch('./scripts/floorplans.json');
   const floors = await response.json();
 
   selectElement.innerHTML = '';

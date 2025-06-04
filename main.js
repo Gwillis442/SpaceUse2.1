@@ -418,6 +418,58 @@ ipcMain.on('SaveSurvey',()=>{
     });
 });
 
+//Event for uploading floorplan
+ipcMain.on('UploadFloorplan', () => {
+  dialog.showOpenDialog({
+    title: 'Select the Floorplan Image to upload',
+    defaultPath: path.join(__dirname, './floorplans/'),
+    buttonLabel: 'Upload',
+
+    filters: [
+      {
+        name: 'SVG Files',
+        extensions: ['svg']
+      }
+    ],
+    properties: ['openFile']
+  }).then(file => {
+    if(!file.canceled) {
+      console.log(file.filePaths[0].toString());
+      let filepath = file.filePaths[0].toString();
+      let filename = path.basename(filepath);
+      let newpath = path.join(__dirname, './floorplans/', filename);
+      
+      //Copy the file to the Floorplans directory
+      fs.copyFile(filepath, newpath, (err) => {
+        if (err) throw err;
+        console.log('File copied successfully');
+        const floorplanData = {
+            name: path.parse(filename).name, // Remove the .svg extension for the name
+            image: `./floorplans/${filename}`,
+        };
+        console.log('Floorplan Data:', floorplanData);
+        win.webContents.send('UploadFloorplanSuccess', floorplanData);
+      });
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+});
+
+ipcMain.on('UpdateFloorplans', (event, floorsplans) => {
+  const filepath = path.join(__dirname, './scripts/floorplans.json');
+  
+  // Write the updated floorplans to the JSON file
+  fs.writeFile(filepath, JSON.stringify(floorsplans, null, 2), (err) => {
+    if (err) {
+      console.error('Error writing to floorplans.json:', err);
+      event.reply('Failed to update floorplans', err.message);
+    }
+    console.log('Floorplans updated successfully');
+    event.reply('UpdateFloorplansSuccess');
+  });
+});
+
 /*function ConvertToCSV(objArray) {
   var str = '';
 
