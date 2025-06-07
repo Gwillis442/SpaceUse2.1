@@ -122,6 +122,7 @@ ipcMain.on('layoutCreate', function(event){
   let Layout = {'Layout': true};
   global.shared.createLayout.push(Layout);
 
+
   let f1 = {'Floor 1': []};
   let f2 = {'Floor 2': []};
   let f3 = {'Floor 3': []};
@@ -418,6 +419,7 @@ ipcMain.on('SaveSurvey',()=>{
     });
 });
 
+//Added in 2.1 
 //Event for uploading floorplan
 ipcMain.on('UploadFloorplan', () => {
   dialog.showOpenDialog({
@@ -444,7 +446,7 @@ ipcMain.on('UploadFloorplan', () => {
         if (err) throw err;
         console.log('File copied successfully');
         const floorplanData = {
-            name: path.parse(filename).name, // Remove the .svg extension for the name
+            name: path.parse(filename).name, //Remove the .svg extension
             image: `./floorplans/${filename}`,
         };
         console.log('Floorplan Data:', floorplanData);
@@ -456,6 +458,8 @@ ipcMain.on('UploadFloorplan', () => {
   });
 });
 
+//Added in 2.1
+//Event for updating floorplans.json with new floorplan data
 ipcMain.on('UpdateFloorplans', (event, floorsplans) => {
   const filepath = path.join(__dirname, './scripts/floorplans.json');
   

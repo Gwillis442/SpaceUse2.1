@@ -202,6 +202,8 @@ ipcRenderer.on('SaveSuccess', ()=>{
     isSurvey = false;
 });
 
+//Added in 2.1
+//After the file is uploaded this is called to update floorplans.json
 ipcRenderer.on('UploadFloorplanSuccess', function(event, floorplanData){
     console.log('Floorplan uploaded successfully:', floorplanData);
     alert('Floorplan uploaded successfully: ' + floorplanData.name);
