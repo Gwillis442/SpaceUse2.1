@@ -208,7 +208,7 @@ ipcRenderer.on('UploadFloorplanSuccess', function(event, floorplanData){
     console.log('Floorplan uploaded successfully:', floorplanData);
     alert('Floorplan uploaded successfully: ' + floorplanData.name);
 
-    fetch('./scripts/floorplans.json')
+    fetch('./data/floorplans.json')
     .then(response => response.json())
     .then(floorsplans => {
 

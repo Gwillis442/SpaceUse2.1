@@ -251,7 +251,7 @@ ipcMain.on('LoadLayout',()=>{
 //loads area file for layout builder
 ipcMain.on('LoadArea', ()=>{
   //TODO FUTURE: Create area 
-  let filepath = path.join(__dirname, './mapscripts/areas.json');
+  let filepath = path.join(__dirname, './data/areas.json');
   let newareadata = JSON.parse(fs.readFileSync(filepath));
   global.shared.areadata = newareadata;
   win.webContents.send('LoadAreasSuccess', newareadata);
@@ -461,7 +461,7 @@ ipcMain.on('UploadFloorplan', () => {
 //Added in 2.1
 //Event for updating floorplans.json with new floorplan data
 ipcMain.on('UpdateFloorplans', (event, floorsplans) => {
-  const filepath = path.join(__dirname, './scripts/floorplans.json');
+  const filepath = path.join(__dirname, './data/floorplans.json');
   
   // Write the updated floorplans to the JSON file
   fs.writeFile(filepath, JSON.stringify(floorsplans, null, 2), (err) => {
