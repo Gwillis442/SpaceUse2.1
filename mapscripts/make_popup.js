@@ -6,6 +6,7 @@ function markerClick(e){
 	furnMap = getFurnMap();
 	activityMap = getActivityMap();
 	wb_activityMap = getWhiteboardActivityMap();
+	document.getElementById("popup").style.display = "block";
 	document.getElementById("lock").style.display = "inline";
 	document.getElementById("lock").innerText = "Unlock";
 	//document.getElementById("rotate").style.display = "block";

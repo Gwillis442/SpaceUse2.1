@@ -2,9 +2,19 @@
 /*Style the popup from clicking a furniture */
 #popup
 {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centers the popup */
+    z-index: 1000;
     overflow-y: scroll;
-    width:45em; 
-    height:40em;
+    width: 45em;
+    height: 40em;
+    background-color: white; /* Add a background color */
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    padding: 15px;
 }
 
 #laypopup{
