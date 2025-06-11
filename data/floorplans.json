@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Floor 1",
+    "image": "floorPlans/libraryfloor1.svg",
+    "id": 1
+  },
+  {
+    "name": "Floor 2",
+    "image": "floorPlans/libraryfloor2.svg",
+    "id": 2
+  },
+  {
+    "name": "Floor 3",
+    "image": "floorPlans/libraryfloor3.svg",
+    "id": 3
+  }
+]
