@@ -50,6 +50,7 @@ getNameForm.addEventListener('submit', function (event){
     let sname = firstname + " " + lastname;
     ipcRenderer.send('toMain', sname);
     getNameForm.style.display = "none";
+    document.querySelector('.navContainer').style.display = 'none';
     home.style.display = 'block';
 });
 
@@ -68,6 +69,7 @@ backBtn.addEventListener('click',()=>{
     showMultiSurvey.disabled = false;
     layoutBuilder.disabled = false;
     getNameForm.style.display = "block";
+    document.querySelector('.navContainer').style.display = 'block';
     document.getElementById("surveyData").style.display = "none";
     isSurvey = false;
     isMulti = false;
@@ -127,11 +129,13 @@ layoutBuilder.addEventListener('click', ()=>{
     getImage.disabled = false;
     surveyBtn.disabled = true;
     loadSurvey.disabled = true;
+    chooseImageBtn.disabled = false;
     showMultiSurvey.disabled = true;
     drawArea.disabled = true;
     ipcRenderer.send('layoutCreate');
 });
 
+//Added in 2.1
 getImage.addEventListener('click', ()=>{
     ipcRenderer.send('UploadFloorplan');
 });

@@ -39,6 +39,7 @@ const surveyfloorBtn = document.getElementById('subsurveyFloor');
 const msurveyfloorBtn = document.getElementById('msubsurveyFloor');
 const layoutfloorBtn = document.getElementById('layoutFloor');
 const layoutDrawBtn = document.getElementById('drawArea');
+const chooseImageBtn = document.getElementById('chooseImage');
 const layoutSaveFloor = document.getElementById('saveLayFloor');
 const layoutSaveLay = document.getElementById('saveLayout');
 
@@ -87,19 +88,29 @@ msurveyfloorBtn.addEventListener('click', function (event){
     addMapPic();
 });
 
-layoutfloorBtn.addEventListener('click', function(event){
+layoutfloorBtn.addEventListener('change', function(event){
     event.preventDefault();
-    mapView.style.display = "block";
     const floorSelect = document.getElementById("layoutFloor");
     imagepath = floorSelect.value;
     const selectedOption = floorSelect.options[floorSelect.selectedIndex];
     sfloor = parseInt(selectedOption.getAttribute('data-id'));
     sfloorName = selectedOption.textContent;
+
+});
+
+chooseImageBtn.addEventListener('click', function(event){
+    event.preventDefault();
+    if (!imagepath) {
+        alert("Please select a floor first!");
+        return;
+    }
+    mapView.style.display = "block";
     isLayoutEdit = true;
     isSurvey = false;
     isMulti = false;
     addMapPic();
-});
+
+})
 
 layoutDrawBtn.addEventListener('click', function(event){
     event.preventDefault();
