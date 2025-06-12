@@ -121,14 +121,13 @@ ipcMain.on('SaveFurniture', function(event, furnMap, sfloor){
 ipcMain.on('layoutCreate', function(event){
   let Layout = {'Layout': true};
   global.shared.createLayout.push(Layout);
+  const floorplansPath = path.join(__dirname, '/data/floorplans.json');
+  const floorplansData = fs.readFileSync(floorplansPath);
+  const floors = JSON.parse(floorplansData);
+  console.log('floors loaded: ', floors);
 
+  event.sender.send('layoutCreateSuccess', floors);
 
-  let f1 = {'Floor 1': []};
-  let f2 = {'Floor 2': []};
-  let f3 = {'Floor 3': []};
-  global.shared.createLayout.push(f1);
-  global.shared.createLayout.push(f2);
-  global.shared.createLayout.push(f3);
 });
 
 ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
