@@ -2,14 +2,21 @@
 
 async function populateFloorSelect(selectId) {
   const selectElement = document.getElementById(selectId);
-  if (!selectElement) {
-    console.error(`Select element with ID ${selectId} not found.`);
-    return;
-  }
+  if (!selectElement) return;
+  
   const response = await fetch('./data/floorplans.json');
   const floors = await response.json();
 
   selectElement.innerHTML = '';
+  if(selectId === "layoutFloor"){
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'Select a Floor';
+    placeholderOption.disabled = true;
+    placeholderOption.selected = true;
+    selectElement.appendChild(placeholderOption);
+  }
+
   floors.forEach(floors => {
     const option = document.createElement("option");
     option.value = floors.image;
