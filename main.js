@@ -6,6 +6,7 @@ const url = require('url');
 const fs = require('fs');
 const os = require('os');
 const global = require('./global.js');
+const floorHelpers = require('./mapscripts/floor_helpers.js');
 const { timeEnd } = require('console');
 const { resourceLimits } = require('worker_threads');
 
@@ -78,13 +79,9 @@ ipcMain.on('toMain', function(event, sname){
   //Store the Surveyor's name in the global Array
   let Surveyor = {'Surveyor': sname};
   global.shared.surveyArray.push(Surveyor);
-  let f1 = {'Floor 1': []};
-  let f2 = {'Floor 2': []};
-  let f3 = {'Floor 3': []};
+
+
   let a = {'Areas': []};
-  global.shared.surveyArray.push(f1);
-  global.shared.surveyArray.push(f2);
-  global.shared.surveyArray.push(f3);
   global.shared.surveyArray.push(a);
   //Navigate to the homepage
   let date = new Date();
@@ -104,18 +101,14 @@ ipcMain.on('back-to-previous',()=>{
 ipcMain.on('SaveFurniture', function(event, furnMap, sfloor){
   
   console.log("Saving Furn Map on floor: " + sfloor);
-  var curfloor = "";
-
-  switch(sfloor){
-    case 1: curfloor = "Floor 1"; break;
-    case 2: curfloor = "Floor 2"; break;
-    case 3: curfloor = "Floor 3"; break;
-  }
   //get floor data from furn map
+  const curfloor = `Floor ${sfloor}`;
+
+  const floorIndex = floorHelpers.ensureFloorExists(sfloor);
 
   let floorFurn = mapToObj(furnMap);
 
-  global.shared.surveyArray[sfloor][curfloor] = floorFurn;
+  global.shared.surveyArray[floorIndex][curfloor] = floorFurn;
 });
 
 ipcMain.on('layoutCreate', function(event){
@@ -132,13 +125,9 @@ ipcMain.on('layoutCreate', function(event){
 
 ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
   console.log("Saving Furn Map on floor: " + sfloor);
-  var curfloor = "";
+  var curfloor = `Floor ${sfloor}`;
 
-  switch(sfloor){
-    case 1: curfloor = "Floor 1"; break;
-    case 2: curfloor = "Floor 2"; break;
-    case 3: curfloor = "Floor 3"; break;
-  }
+  const floorIndex = floorHelpers.ensureFloorExists(sfloor);
 
   //floordata from furn map
   for(let [key, value] of furnMap){
@@ -154,7 +143,7 @@ ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
       "degree_offset": value.degree_offset
     };
 
-    global.shared.createLayout[sfloor][curfloor].push(furnString);
+    global.shared.createLayout[floorIndex][curfloor].push(furnString);
   }
 
 });
