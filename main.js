@@ -148,48 +148,49 @@ ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
 
 });
 
-ipcMain.on('SaveLayout', ()=>{
+// Originally this was used to save the layout, but now it is handled in the LoadLayout event
+// ipcMain.on('SaveLayout', ()=>{
   
-  let data = global.shared.createLayout;
-  let areadata = global.shared.areadata;
-  let toconvert = { 
-    "Layout": true,
-    "Floor 1": data[1]["Floor 1"],
-    "Floor 2": data[2]["Floor 2"],
-    "Floor 3": data[3]["Floor 3"],
-    "Areas": areadata["Areas"]
-  }
+//   let data = global.shared.createLayout;
+//   let areadata = global.shared.areadata;
+//   let toconvert = { 
+//     "Layout": true,
+//     "Floor 1": data[1]["Floor 1"],
+//     "Floor 2": data[2]["Floor 2"],
+//     "Floor 3": data[3]["Floor 3"],
+//     "Areas": areadata["Areas"]
+//   }
 
-  let jsonObject = JSON.stringify(toconvert);
-  let dpath = './Layouts/' + "NewLayout" + '.json'
+//   let jsonObject = JSON.stringify(toconvert);
+//   let dpath = './Layouts/' + "NewLayout" + '.json'
 
-  dialog.showSaveDialog({
-    title: 'Select the File Path to save',
-    defaultPath: path.join(__dirname, dpath),
-    buttonLabel: 'Save',
-    filters: [
-      {
-        name: 'Text Files',
-        extensions: ['json']
-      }
-    ],
-    properties: []
-  }).then(file => {
-    if (!file.canceled) {
-      console.log(file.filePath.toString());
+//   dialog.showSaveDialog({
+//     title: 'Select the File Path to save',
+//     defaultPath: path.join(__dirname, dpath),
+//     buttonLabel: 'Save',
+//     filters: [
+//       {
+//         name: 'Text Files',
+//         extensions: ['json']
+//       }
+//     ],
+//     properties: []
+//   }).then(file => {
+//     if (!file.canceled) {
+//       console.log(file.filePath.toString());
         
-      // Creating and Writing to the sample.txt file
-      fs.writeFile(file.filePath.toString(),jsonObject, function (err) {
-        if (err) throw err;
-          console.log('Saved!');
-          global.shared.createLayout.length = 0;
-          win.webContents.send('SaveSuccess');
-        });
-      }
-    }).catch(err => {
-      console.log(err)
-    });
-});
+//       // Creating and Writing to the sample.txt file
+//       fs.writeFile(file.filePath.toString(),jsonObject, function (err) {
+//         if (err) throw err;
+//           console.log('Saved!');
+//           global.shared.createLayout.length = 0;
+//           win.webContents.send('SaveSuccess');
+//         });
+//       }
+//     }).catch(err => {
+//       console.log(err)
+//     });
+// });
 
 ipcMain.on('LoadLayout',()=>{
   //Load File

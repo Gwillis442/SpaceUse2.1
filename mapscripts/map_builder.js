@@ -98,39 +98,38 @@ layoutfloorBtn.addEventListener('change', function(event){
 
 });
 
-chooseImageBtn.addEventListener('click', function(event){
-    event.preventDefault();
-    if (!imagepath) {
-        alert("Please select a floor first!");
-        return;
-    }
+// chooseImageBtn.addEventListener('click', function(event){
+//     event.preventDefault();
+//     if (!imagepath) {
+//         alert("Please select a floor first!");
+//         return;
+//     }
 
-    console.log("Initializing layout structure for floor:", sfloor, sfloorName);
-    
-    // Clear any existing layout data
-    if (!global.shared.createLayout) {
-        global.shared.createLayout = [];
-    }
-    global.shared.createLayout.length = 0;
-    
-    // Create the layout structure with Layout flag
-    let Layout = {'Layout': true};
-    global.shared.createLayout.push(Layout);
-    
-    // Initialize ONLY the selected floor structure
-    let floorData = {};
-    floorData[sfloorName] = []; // Empty array to store furniture as it's placed
-    global.shared.createLayout.push(floorData);
-    
-    console.log("Layout structure initialized for", sfloorName, ":", global.shared.createLayout);
-    
-    mapView.style.display = "block";
-    isLayoutEdit = true;
-    isSurvey = false;
-    isMulti = false;
-    addMapPic();
+//     console.log("Loading layout for floorplan: " + sfloorName);
 
-})
+//     const layoutFilePath = `./data/layouts/${sfloorName}.json`;
+//     const fs = require('fs');
+
+//     if(fs.existsSync(layoutFilePath)) {
+//         const layoutData = JSON.parse(fs.readFileSync(layoutFilePath, 'utf8'));
+//         furnMap.clear();
+//         layoutData.forEach(function(item){
+//             furnMap.set(furnitureLayer.fid, furniture);
+//         });
+//         console.log(`Loaded layout data for ${sfloorName}`);
+
+//     } else {
+//         furnMap.clear();
+//         console.log(`No layout data found for ${sfloorName}`);
+//     }
+    
+//     mapView.style.display = "block";
+//     isLayoutEdit = true;
+//     isSurvey = false;
+//     isMulti = false;
+//     addMapPic();
+
+// });
 
 layoutDrawBtn.addEventListener('click', function(event){
     event.preventDefault();

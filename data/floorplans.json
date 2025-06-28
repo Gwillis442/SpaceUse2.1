@@ -13,5 +13,10 @@
     "name": "Floor 3",
     "image": "floorPlans/libraryfloor3.svg",
     "id": 3
+  },
+  {
+    "name": "NOTlibraryfloor3",
+    "image": "./floorplans/NOTlibraryfloor3.svg",
+    "id": 4
   }
 ]

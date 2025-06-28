@@ -1,5 +1,3 @@
-
-
 //setup global variables for map builder
 var selected_marker;
 var selected_furn;
@@ -121,8 +119,6 @@ function addAreas(areadata){
 }
 
 function createFurnObj(ftype, lat, lng, coord){
-    //get the index of the selected item
-    
     mapKey++;
 
     var selectedIcon = getIconObj(ftype);
@@ -136,6 +132,10 @@ function createFurnObj(ftype, lat, lng, coord){
     console.log(newFurn);
 
     furnMap.set(mapKey, newFurn);
+    console.log(`Furniture Map Contents After Creation:`, Array.from(furnMap.entries()));
+
+    // Update the global array for the selected floor
+    updateGlobalArrayForFloor(sfloorName);
 
     //TODO: check if furniture is in an area, if it is add the area_id
 
@@ -261,3 +261,71 @@ function rotateHelper(parentDiv)
 	}
 
 }
+
+// Update the global array dynamically based on the selected floor
+function updateGlobalArrayForFloor(floorName) {
+    if (!global.shared.createLayout) {
+        global.shared.createLayout = [];
+    }
+
+    // Check if the floor already exists in the global array
+    let floorIndex = global.shared.createLayout.findIndex(layout => layout[floorName]);
+
+    if (floorIndex === -1) {
+        let newFloorData = {};
+        newFloorData[floorName] = []; // Initialize an empty array for furniture
+        global.shared.createLayout.push(newFloorData);
+        floorIndex = global.shared.createLayout.length - 1;
+        console.log(`Initialized layout structure for ${floorName}`);
+    }
+
+    global.shared.createLayout[floorIndex][floorName] = Array.from(furnMap.values());
+    console.log(`Updated layout structure for ${floorName}:`, global.shared.createLayout[floorIndex][floorName]);
+    console.log(`Global Layout Array Contents:`, global.shared.createLayout);
+
+}
+
+// Modify the chooseImageBtn click event to use the new function
+chooseImageBtn.addEventListener('click', function(event) {
+    event.preventDefault();
+
+    if (!imagepath) {
+        console.error("No image path selected");
+        return;
+    }
+
+    console.log("Initializing layout structure for floor:", sfloor, sfloorName);
+
+    // Update the global array for the selected floor
+    updateGlobalArrayForFloor(sfloorName);
+
+    mapView.style.display = "block";
+    isLayoutEdit = true;
+    isSurvey = false;
+    isMulti = false;
+    addMapPic();
+});
+
+// Function to save the global array as a JSON file
+function saveLayoutData() {
+    const layoutData = JSON.stringify(global.shared.createLayout, null, 2);
+    console.log("Saving Layout Data:", layoutData);
+    
+    // Use the File System API to save the JSON file
+    const fs = require('fs');
+    const filePath = `./Layouts/${sfloorName}_layout.json`;
+
+    fs.writeFile(filePath, layoutData, (err) => {
+        if (err) {
+            console.error("Error saving layout data:", err);
+        } else {
+            console.log(`Layout data for ${sfloorName} saved successfully to ${filePath}`);
+        }
+    });
+}
+
+// Modify the layoutSaveLay button click event to call the save function
+layoutSaveLay.addEventListener('click', function(event) {
+    event.preventDefault();
+    saveLayoutData();
+});

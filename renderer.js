@@ -128,6 +128,7 @@ layoutBuilder.addEventListener('click', ()=>{
     layoutMenu.style.display = "block";
     getImage.disabled = false;
     surveyBtn.disabled = true;
+    saveLayFloor.disabled = true;
     loadSurvey.disabled = true;
     chooseImageBtn.disabled = false;
     showMultiSurvey.disabled = true;
@@ -179,11 +180,10 @@ saveLayFloor.addEventListener('click', ()=>{
     alert('Floor ' + sfloor + ' layout saved!');
 });
 
-
-saveLay.addEventListener('click', function (event){
-    alert('Saving Layout?');
-    ipcRenderer.send('SaveLayout');
-});
+// saveLay.addEventListener('click', function (event){
+//     alert('Saving Layout?');
+//     ipcRenderer.send('SaveLayout');
+// });
 
 saveSurvey.addEventListener('click', ()=>{
     ipcRenderer.send('SaveSurvey');
