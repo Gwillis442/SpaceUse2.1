@@ -262,6 +262,7 @@ function rotateHelper(parentDiv)
 
 }
 
+// Added in 2.1
 // Update the global array dynamically based on the selected floor
 function updateGlobalArrayForFloor(floorName) {
     if (!global.shared.createLayout) {
@@ -279,7 +280,16 @@ function updateGlobalArrayForFloor(floorName) {
         console.log(`Initialized layout structure for ${floorName}`);
     }
 
-    global.shared.createLayout[floorIndex][floorName] = Array.from(furnMap.values());
+    const furnData = Array.from(furnMap.values().map(furn => ({
+        fid: furn.furn_id,
+        num_seats: parseInt(furn.num_seats) || 0, // Ensure num_seats is a number
+        x: furn.x,
+        y: furn.y,
+        ftype: furn.ftype,
+        degree_offset: parseInt(furn.degreeOffset) || 0 // Ensure degree_offset is a number
+    })));
+
+    global.shared.createLayout[floorIndex][floorName] = furnData;
     console.log(`Updated layout structure for ${floorName}:`, global.shared.createLayout[floorIndex][floorName]);
     console.log(`Global Layout Array Contents:`, global.shared.createLayout);
 
@@ -308,12 +318,13 @@ chooseImageBtn.addEventListener('click', function(event) {
 
 // Function to save the global array as a JSON file
 function saveLayoutData() {
+    const date = new Date();
     const layoutData = JSON.stringify(global.shared.createLayout, null, 2);
     console.log("Saving Layout Data:", layoutData);
-    
+
     // Use the File System API to save the JSON file
     const fs = require('fs');
-    const filePath = `./Layouts/${sfloorName}_layout.json`;
+    const filePath = `./Layouts/${sfloorName}_${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.json`;
 
     fs.writeFile(filePath, layoutData, (err) => {
         if (err) {
@@ -322,6 +333,7 @@ function saveLayoutData() {
             console.log(`Layout data for ${sfloorName} saved successfully to ${filePath}`);
         }
     });
+    alert(`Layout data for ${sfloorName} saved successfully!`);
 }
 
 // Modify the layoutSaveLay button click event to call the save function

@@ -123,30 +123,30 @@ ipcMain.on('layoutCreate', function(event){
 
 });
 
-ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
-  console.log("Saving Furn Map on floor: " + sfloor);
-  var curfloor = `Floor ${sfloor}`;
+// ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
+//   console.log("Saving Furn Map on floor: " + sfloor);
+//   var curfloor = `Floor ${sfloor}`;
 
-  const floorIndex = floorHelpers.ensureFloorExists(sfloor);
+//   const floorIndex = floorHelpers.ensureFloorExists(sfloor);
 
-  //floordata from furn map
-  for(let [key, value] of furnMap){
-    let furnString = "";
-    let num_seats = parseInt(value.num_seats);
+//   //floordata from furn map
+//   for(let [key, value] of furnMap){
+//     let furnString = "";
+//     let num_seats = parseInt(value.num_seats);
 
-    furnString = {
-      "fid": value.furn_id,
-      "num_seats": num_seats,
-      "x": value.x,
-      "y": value.y,
-      "ftype": value.ftype,
-      "degree_offset": value.degree_offset
-    };
+//     furnString = {
+//       "fid": value.furn_id,
+//       "num_seats": num_seats,
+//       "x": value.x,
+//       "y": value.y,
+//       "ftype": value.ftype,
+//       "degree_offset": value.degree_offset
+//     };
 
-    global.shared.createLayout[floorIndex][curfloor].push(furnString);
-  }
+//     global.shared.createLayout[floorIndex][curfloor].push(furnString);
+//   }
 
-});
+// });
 
 // Originally this was used to save the layout, but now it is handled in the LoadLayout event
 // ipcMain.on('SaveLayout', ()=>{

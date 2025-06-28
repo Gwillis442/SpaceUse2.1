@@ -98,39 +98,6 @@ layoutfloorBtn.addEventListener('change', function(event){
 
 });
 
-// chooseImageBtn.addEventListener('click', function(event){
-//     event.preventDefault();
-//     if (!imagepath) {
-//         alert("Please select a floor first!");
-//         return;
-//     }
-
-//     console.log("Loading layout for floorplan: " + sfloorName);
-
-//     const layoutFilePath = `./data/layouts/${sfloorName}.json`;
-//     const fs = require('fs');
-
-//     if(fs.existsSync(layoutFilePath)) {
-//         const layoutData = JSON.parse(fs.readFileSync(layoutFilePath, 'utf8'));
-//         furnMap.clear();
-//         layoutData.forEach(function(item){
-//             furnMap.set(furnitureLayer.fid, furniture);
-//         });
-//         console.log(`Loaded layout data for ${sfloorName}`);
-
-//     } else {
-//         furnMap.clear();
-//         console.log(`No layout data found for ${sfloorName}`);
-//     }
-    
-//     mapView.style.display = "block";
-//     isLayoutEdit = true;
-//     isSurvey = false;
-//     isMulti = false;
-//     addMapPic();
-
-// });
-
 layoutDrawBtn.addEventListener('click', function(event){
     event.preventDefault();
     var backcolor = layoutDrawBtn.style.backgroundColor;

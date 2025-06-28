@@ -180,11 +180,6 @@ saveLayFloor.addEventListener('click', ()=>{
     alert('Floor ' + sfloor + ' layout saved!');
 });
 
-// saveLay.addEventListener('click', function (event){
-//     alert('Saving Layout?');
-//     ipcRenderer.send('SaveLayout');
-// });
-
 saveSurvey.addEventListener('click', ()=>{
     ipcRenderer.send('SaveSurvey');
 });
