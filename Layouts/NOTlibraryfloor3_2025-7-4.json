@@ -1,0 +1,45 @@
+{
+  "Layout": true,
+  "NOTlibraryfloor3": [
+    {
+      "fid": 1,
+      "num_seats": 4,
+      "x": 144.75,
+      "y": 227.25,
+      "ftype": 1,
+      "degree_offset": 0
+    },
+    {
+      "fid": 2,
+      "num_seats": 4,
+      "x": 149,
+      "y": 198.75,
+      "ftype": 1,
+      "degree_offset": 0
+    },
+    {
+      "fid": 3,
+      "num_seats": 4,
+      "x": 154.5,
+      "y": 231.75,
+      "ftype": 1,
+      "degree_offset": 0
+    },
+    {
+      "fid": 4,
+      "num_seats": 4,
+      "x": 159,
+      "y": 198,
+      "ftype": 1,
+      "degree_offset": 0
+    },
+    {
+      "fid": 5,
+      "num_seats": 4,
+      "x": 170,
+      "y": 211.25,
+      "ftype": 1,
+      "degree_offset": 0
+    }
+  ]
+}

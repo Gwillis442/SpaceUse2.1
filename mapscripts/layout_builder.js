@@ -1,3 +1,4 @@
+const furnitureData = require('./data/furniture.json');
 //setup global variables for map builder
 var selected_marker;
 var selected_furn;
@@ -280,14 +281,17 @@ function updateGlobalArrayForFloor(floorName) {
         console.log(`Initialized layout structure for ${floorName}`);
     }
 
-    const furnData = Array.from(furnMap.values().map(furn => ({
-        fid: furn.furn_id,
-        num_seats: parseInt(furn.num_seats) || 0, // Ensure num_seats is a number
-        x: furn.x,
-        y: furn.y,
-        ftype: furn.ftype,
-        degree_offset: parseInt(furn.degreeOffset) || 0 // Ensure degree_offset is a number
-    })));
+    const furnData = Array.from(furnMap.values().map(furn => {
+        const meta = furnitureData.find(item => item.ftype === furn.ftype);
+        return{
+            fid: furn.furn_id,
+            num_seats: meta ? meta.seats : (parseInt(furn.num_seats)||0),
+            x: furn.x,
+            y: furn.y,
+            ftype: furn.ftype,
+            degree_offset: parseInt(furn.degreeOffset) || 0 // Ensure degree_offset is a number
+        };
+    }));
 
     global.shared.createLayout[floorIndex][floorName] = furnData;
     console.log(`Updated layout structure for ${floorName}:`, global.shared.createLayout[floorIndex][floorName]);
@@ -319,14 +323,18 @@ chooseImageBtn.addEventListener('click', function(event) {
 // Function to save the global array as a JSON file
 function saveLayoutData() {
     const date = new Date();
-    const layoutData = JSON.stringify(global.shared.createLayout, null, 2);
-    console.log("Saving Layout Data:", layoutData);
+  // merge your array of { Floor X: [...] } entries into one object
+  const floors = Object.assign({}, ...global.shared.createLayout);
+  // prepend the Layout flag
+  const outObj = Object.assign({ Layout: true }, floors);
+
+    console.log("Saving Layout Data:", outObj);
 
     // Use the File System API to save the JSON file
     const fs = require('fs');
     const filePath = `./Layouts/${sfloorName}_${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}.json`;
 
-    fs.writeFile(filePath, layoutData, (err) => {
+    fs.writeFile(filePath, JSON.stringify(outObj, null, 2), (err) => {
         if (err) {
             console.error("Error saving layout data:", err);
         } else {

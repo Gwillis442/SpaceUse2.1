@@ -1,0 +1,232 @@
+[
+  {
+    "ftype": 1,
+    "name": "Rectangle Table",
+    "seats": 4,
+    "image": "./furnitureIcons/rect_table.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 2,
+    "name": "Long Rectangle Table",
+    "seats": 6,
+    "image": "./furnitureIcons/rect_table.svg",
+    "iconSize": [10, 30],
+    "className": "furnitureLongIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 3,
+    "name": "Curved Counter",
+    "seats": 2,
+    "image": "./furnitureIcons/counter_curved.png",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 4,
+    "name": "Small Circular Table",
+    "seats": 4,
+    "image": "./furnitureIcons/circ_table.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 5,
+    "name": "Circular Table",
+    "seats": 8,
+    "image": "./furnitureIcons/circ_table.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 6,
+    "name": "Curved Couch",
+    "seats": 6,
+    "image": "./furnitureIcons/couch_curved.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 7,
+    "name": "Couch Two",
+    "seats": 2,
+    "image": "./furnitureIcons/couch_two.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 8,
+    "name": "Couch Three",
+    "seats": 3,
+    "image": "./furnitureIcons/couch_three.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 9,
+    "name": "Couch Four",
+    "seats": 4,
+    "image": "./furnitureIcons/couch_four.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 10,
+    "name": "Couch Six",
+    "seats": 6,
+    "image": "./furnitureIcons/couch_six.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 11,
+    "name": "Large Computer Station",
+    "seats": 4,
+    "image": "./furnitureIcons/square_table.svg",
+    "iconSize": [20, 20],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [2.5, 2.5],
+    "popupAnchor": [2.5, 2.5]
+  },
+  {
+    "ftype": 12,
+    "name": "Collaboration Station",
+    "seats": 2,
+    "image": "./furnitureIcons/collab_station.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 13,
+    "name": "Computer Station",
+    "seats": 3,
+    "image": "./furnitureIcons/square_table.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [2.5, 2.5],
+    "popupAnchor": [2.5, 2.5]
+  },
+  {
+    "ftype": 14,
+    "name": "Seat One",
+    "seats": 4,
+    "image": "./furnitureIcons/seat_one.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 15,
+    "name": "Seat One Soft",
+    "seats": 6,
+    "image": "./furnitureIcons/seat_one_soft.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 16,
+    "name": "Fit Desk",
+    "seats": 1,
+    "image": "./furnitureIcons/fit_desk_empty.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 17,
+    "name": "Med Corner",
+    "seats": 4,
+    "image": "./furnitureIcons/med_corner_empty.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 18,
+    "name": "Microfilm Reader",
+    "seats": 4,
+    "image": "./furnitureIcons/mf_reader_empty.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 19,
+    "name": "Study One",
+    "seats": 4,
+    "image": "./furnitureIcons/study_one.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 20,
+    "name": "Study Two",
+    "seats": 8,
+    "image": "./furnitureIcons/study_two.png",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 21,
+    "name": "Study Three",
+    "seats": 1,
+    "image": "./furnitureIcons/study_three.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 22,
+    "name": "Study Four",
+    "seats": 1,
+    "image": "./furnitureIcons/study_four.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureLargeIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  },
+  {
+    "ftype": 23,
+    "name": "Video Viewer",
+    "seats": 1,
+    "image": "./furnitureIcons/vid_viewer_empty.svg",
+    "iconSize": [10, 10],
+    "className": "furnitureIcon",
+    "iconAnchor": [5, 5],
+    "popupAnchor": [5, 5]
+  }
+]
