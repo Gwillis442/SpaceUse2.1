@@ -1,3 +1,4 @@
+const { get } = require('jquery');
 const furnitureData = require('./data/furniture.json');
 //setup global variables for map builder
 var selected_marker;
@@ -35,56 +36,43 @@ function areaMaker(e){
 }
 
 function markerLayClick(e){
-    //when a marker is clicked, it should be rotatable, and delete able
-    selected_marker = this;
-    selected_furn = furnMap.get(selected_marker.options.fid);
-    //make sure the nameDiv is created and attached to popup
-    if(document.getElementById("nameDiv") == null){
-        var nameDiv = document.createElement("div");
-        nameDiv.id = "nameDiv";
-        document.getElementById("laypopup").appendChild(nameDiv);
-    }
-    //set the nameDiv to the name of the current furniture
-    var nameDiv = document.getElementById("nameDiv");
-    nameDiv.innerHTML = "<strong>Type: </strong>"+selected_furn.ftype+"</br></br>";
+selected_marker = this;
+  selected_furn  = furnMap.get(this.fid);
 
-    if(document.getElementById("deleteButtonDiv") == null) {
-        //create a div to hold delete marker button
-        var deleteButtonDiv = document.createElement("div");
-        deleteButtonDiv.id = "deleteButtonDiv";
-        //attach deleteButton div to popup
-        document.getElementById("laypopup").appendChild(deleteButtonDiv);
-        //create delete button
-        var deleteMarkerButton = document.createElement("BUTTON");
-        deleteMarkerButton.id = "deleteMarkerButton";
-        deleteMarkerButton.innerHTML = "Delete";
-        deleteMarkerButton.onclick = deleteHelper;
-        //deleteMarkerButton.className = "deleteButton";
-        //add the button to the div
-        document.getElementById("deleteButtonDiv").appendChild(deleteMarkerButton);
-    }
+  // build HTML for popup
+  const content = `
+    <div>
+      <div><strong>Type:</strong> ${selected_furn.ftype}</div>
+      <div><strong>Seats:</strong> ${selected_furn.num_seats}</div>
+      <div style="margin:0.5em 0;">
+        <label for="rotateSlider">Rotate:</label><br/>
+        <input type="range" id="rotateSlider" min="-180" max="180" step="10" 
+               value="${selected_furn.degreeOffset}" style="width:100%;"/><br/>
+        <span id="sliderValue">${selected_furn.degreeOffset}°</span>
+      </div>
+      <button id="deleteMarkerButton" style="margin-top:0.5em;">Delete</button>
+    </div>`;
 
-    //check if the rotateDiv has been made
-    if(document.getElementById("rotateDiv") == null){
-        //create a div to hold rotateButton
-        var rotateDiv = document.createElement("div");
-        rotateDiv.id = "rotateDiv";
-        //attach the rotatebutton div to the popup
-        document.getElementById("laypopup").appendChild(rotateDiv);
-        rotateHelper("rotateDiv");
-    }
+  // set and open
+  selected_marker.setPopupContent(content);
+  selected_marker.openPopup();
 
-    if(document.getElementById("seataddDiv") == null){
-        var seataddDiv = document.createElement("div");
-        seataddDiv.id = "seataddDiv";
-        let popup = document.getElementById("laypopup");
-        popup.appendChild(seataddDiv);
-        
-        //Seat adding function broken, default seats to 2 for every furniture
-        //seatAddHelper("seataddDiv");
-        
-    }
-    seatAddHelper(selected_furn);
+  // attach slider handler
+  const slider = document.getElementById('rotateSlider');
+  const display = document.getElementById('sliderValue');
+  slider.oninput = () => {
+    const angle = +slider.value;
+    selected_furn.degreeOffset = angle;
+    selected_marker.setRotationOrigin('center');
+    selected_marker.setRotationAngle(angle);
+    display.textContent = angle + '°';
+  };
+
+  // attach delete handler
+  document.getElementById('deleteMarkerButton').onclick = () => {
+    mymap.removeLayer(selected_marker);
+    furnMap.delete(selected_furn.furn_id);
+  };
 }
 
 function addAreas(areadata){
@@ -121,11 +109,11 @@ function addAreas(areadata){
 
 function createFurnObj(ftype, lat, lng, coord){
     mapKey++;
-
-    var selectedIcon = getIconObj(ftype);
-
+    const meta = furnitureData.find(m=>m.ftype===ftype) || {};
+    var iconInstance = getIconObj(ftype);
+    
     //create the furniture object and store in map
-    var newFurn = new Furniture(mapKey, 0);
+    var newFurn = new Furniture(mapKey, meta.seats || 0);
     newFurn.ftype = ftype;
     newFurn.x = lng;
     newFurn.y = lat;
@@ -134,6 +122,27 @@ function createFurnObj(ftype, lat, lng, coord){
 
     furnMap.set(mapKey, newFurn);
     console.log(`Furniture Map Contents After Creation:`, Array.from(furnMap.entries()));
+
+    var marker = L.marker([lat, lng], {
+    icon:          iconInstance,
+    rotationAngle: newFurn.degreeOffset,
+    draggable:    true
+  }).addTo(furnitureLayer);
+
+    marker.setIcon(iconInstance);
+    marker.fid = newFurn.furn_id;
+    marker.ftype = ftype;
+
+    marker.bindPopup('', {minWidth:200, minHeight:200})
+        .on('click', markerLayClick)
+        .on('dragend', function(e) {
+             const pos = e.target.getLatLng();
+             const furn = furnMap.get(this.fid);
+             furn.x = pos.lng;
+             furn.y = pos.lat;
+             console.log('dragend:', furn);
+             setTimeout(()=> mymap.on('click', markerLayClick),10);
+        });
 
     // Update the global array for the selected floor
     updateGlobalArrayForFloor(sfloorName);
@@ -153,14 +162,14 @@ function createFurnObj(ftype, lat, lng, coord){
         'minHeight': '400'
     };//This is the dimensions for the popup
 
-    marker = L.marker(coord, {
-            fid: mapKey,
-            icon: selectedIcon,
-            rotationAngle: 0,
-            draggable: true
-    }).addTo(furnitureLayer).bindPopup(laypopup, laypopupDim);
-    //give it an onclick function
-    marker.on('click', markerLayClick);
+    // marker = L.marker(coord, {
+    //         fid: mapKey,
+    //         icon: selectedIcon,
+    //         rotationAngle: 0,
+    //         draggable: true
+    // }).addTo(furnitureLayer).bindPopup(laypopup, laypopupDim);
+    // //give it an onclick function
+    // marker.on('click', markerLayClick);
 
     //define drag events
     marker.on('drag', function(e) {
@@ -177,12 +186,12 @@ function createFurnObj(ftype, lat, lng, coord){
         var lng=changedPos.lng;
 
         selected_marker = this;
-        selected_furn = furnMap.get(selected_marker.options.fid);
+        selected_furn = furnMap.get(this.fid);
         selected_furn.x = lng;
         selected_furn.y = lat;
 
         //output to console to check values
-        console.log('marker dragend event');
+        console.log('marker dragend event, updated coords:', selected_furn);
 
         setTimeout(function() {
             mymap.on('click', markerLayClick);

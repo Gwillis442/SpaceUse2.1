@@ -8,6 +8,7 @@ MIT LISCENSE
 var L = require('leaflet');
 window.$ = window.jQuery = require('jquery');
 
+
 var imagepath = "";
 var sfloor = "";
 var isSurvey = false;

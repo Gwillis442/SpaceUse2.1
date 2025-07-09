@@ -42,7 +42,7 @@
   {
     "ftype": 5,
     "name": "Circular Table",
-    "seats": 8,
+    "seats": 4,
     "image": "./furnitureIcons/circ_table.svg",
     "iconSize": [10, 10],
     "className": "furnitureLargeIcon",
@@ -92,7 +92,7 @@
   {
     "ftype": 10,
     "name": "Couch Six",
-    "seats": 6,
+    "seats": 4,
     "image": "./furnitureIcons/couch_six.svg",
     "iconSize": [10, 10],
     "className": "furnitureLargeIcon",
@@ -142,7 +142,7 @@
   {
     "ftype": 15,
     "name": "Seat One Soft",
-    "seats": 6,
+    "seats": 1,
     "image": "./furnitureIcons/seat_one_soft.svg",
     "iconSize": [10, 10],
     "className": "furnitureIcon",
@@ -162,7 +162,7 @@
   {
     "ftype": 17,
     "name": "Med Corner",
-    "seats": 4,
+    "seats": 2,
     "image": "./furnitureIcons/med_corner_empty.svg",
     "iconSize": [10, 10],
     "className": "furnitureIcon",
@@ -172,7 +172,7 @@
   {
     "ftype": 18,
     "name": "Microfilm Reader",
-    "seats": 4,
+    "seats": 1,
     "image": "./furnitureIcons/mf_reader_empty.svg",
     "iconSize": [10, 10],
     "className": "furnitureIcon",
@@ -182,7 +182,7 @@
   {
     "ftype": 19,
     "name": "Study One",
-    "seats": 4,
+    "seats": 1,
     "image": "./furnitureIcons/study_one.svg",
     "iconSize": [10, 10],
     "className": "furnitureIcon",
@@ -192,8 +192,8 @@
   {
     "ftype": 20,
     "name": "Study Two",
-    "seats": 8,
-    "image": "./furnitureIcons/study_two.png",
+    "seats": 2,
+    "image": "./furnitureIcons/study_two.svg",
     "iconSize": [10, 10],
     "className": "furnitureLargeIcon",
     "iconAnchor": [5, 5],
@@ -202,7 +202,7 @@
   {
     "ftype": 21,
     "name": "Study Three",
-    "seats": 1,
+    "seats": 3,
     "image": "./furnitureIcons/study_three.svg",
     "iconSize": [10, 10],
     "className": "furnitureLargeIcon",
@@ -212,7 +212,7 @@
   {
     "ftype": 22,
     "name": "Study Four",
-    "seats": 1,
+    "seats": 4,
     "image": "./furnitureIcons/study_four.svg",
     "iconSize": [10, 10],
     "className": "furnitureLargeIcon",

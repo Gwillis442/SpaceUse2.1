@@ -77,12 +77,6 @@
     font-family: 'Lato', sans-serif;
 }
 
-#rotateSlider
-{
-	position: fixed;
-	top: 80px;
-	right: 56px;
-}
 
 #sliderValue
 {
@@ -274,4 +268,25 @@
     margin: 9px;
     border-radius: 0%;
     vertical-align: middle;
+}
+
+.layout-popup { 
+  font-family: Lato, sans-serif;
+}
+.layout-popup > div { margin-bottom: .5em; }
+.layout-popup label { display: block; margin-bottom: .25em; }
+.layout-popup input[type="range"] {
+  width: 100%;
+  display: block;
+  margin: .25em 0;
+}
+.layout-popup #sliderValue {
+  display: block;
+  text-align: right;
+  margin-bottom: .5em;
+}
+.layout-popup button {
+  display: block;
+  margin: 0 auto;
+  padding: .5em 1em;
 }
