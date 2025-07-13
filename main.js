@@ -197,7 +197,8 @@ ipcMain.on('LoadLayout',()=>{
   dialog.showOpenDialog({
     title: 'Select the Layout to be uploaded',
     defaultPath: path.join(__dirname, './Layouts/'),
-    buttonLabel: 'Upload',
+    buttonLabel: 'Load Layout',
+    properties: ['openFile'],
     // Restricting the user to only Text Files.
     filters: [
       {
