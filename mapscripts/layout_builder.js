@@ -37,13 +37,20 @@ function areaMaker(e){
 
 function markerLayClick(e){
 selected_marker = this;
-  selected_furn  = furnMap.get(this.fid);
+selected_furn  = this.furn || furnMap.get(this.fid);
+const maxSeats = 10;
 
+  let seatOptions = '';
+  for(let i = 0; i <= maxSeats; i++){
+    seatOptions += `<option value="${i}" ${i === selected_furn.num_seats ? 'selected' : ''}>${i}</option>`;
+  }
   // build HTML for popup
   const content = `
     <div>
       <div><strong>Type:</strong> ${selected_furn.ftype}</div>
-      <div><strong>Seats:</strong> ${selected_furn.num_seats}</div>
+      <div>
+      <label for="seatCountSelect">Seats:</label><br/>
+      <select id="seatCountSelect">${seatOptions}</select></div>
       <div style="margin:0.5em 0;">
         <label for="rotateSlider">Rotate:</label><br/>
         <input type="range" id="rotateSlider" min="-180" max="180" step="10" 
@@ -56,6 +63,13 @@ selected_marker = this;
   // set and open
   selected_marker.setPopupContent(content);
   selected_marker.openPopup();
+
+const seatSelect = document.getElementById('seatCountSelect');
+seatSelect.onchange = () => {
+    selected_furn.num_seats = parseInt(seatSelect.value, 10);
+    updateGlobalArrayForFloor(sfloorName);
+  };
+
 
   // attach slider handler
   const slider = document.getElementById('rotateSlider');
@@ -129,6 +143,7 @@ function createFurnObj(ftype, lat, lng, coord){
     draggable:    true
   }).addTo(furnitureLayer);
 
+    marker.furn = newFurn;
     marker.setIcon(iconInstance);
     marker.fid = newFurn.furn_id;
     marker.ftype = ftype;
@@ -294,7 +309,7 @@ function updateGlobalArrayForFloor(floorName) {
         const meta = furnitureData.find(item => item.ftype === furn.ftype);
         return{
             fid: furn.furn_id,
-            num_seats: meta ? meta.seats : (parseInt(furn.num_seats)||0),
+            num_seats: (typeof furn.num_seats === 'number') ? furn.num_seats : (meta.seats || 0),
             x: furn.x,
             y: furn.y,
             ftype: furn.ftype,
