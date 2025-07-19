@@ -409,7 +409,7 @@ function getIconObj(furniture_type) {
   if (!item) {
     // fallback icon
     return L.icon({
-      iconUrl: './images/icons/default.svg',
+      iconUrl: './images/icons/room.png',
       iconSize: [10,10],
       iconAnchor: [5,5],
       popupAnchor: [5,5]

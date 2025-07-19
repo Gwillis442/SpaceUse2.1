@@ -193,6 +193,7 @@ ipcMain.on('layoutCreate', function(event){
 // });
 
 ipcMain.on('LoadLayout',()=>{
+  console.log("Loading Layout");
   //Load File
   dialog.showOpenDialog({
     title: 'Select the Layout to be uploaded',
