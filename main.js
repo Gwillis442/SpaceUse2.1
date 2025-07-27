@@ -315,7 +315,7 @@ ipcMain.on('LoadSurvey', ()=>{
   //Load File
   dialog.showOpenDialog({
     title: 'Select the Survey to be uploaded',
-    defaultPath: path.join(__dirname, './SavedSurveys/'),
+    defaultPath: path.join(__dirname, './Surveys/'),
     buttonLabel: 'Upload',
     // Restricting the user to only Text Files.
     filters: [
@@ -353,7 +353,7 @@ ipcMain.on('LoadSurvey', ()=>{
 ipcMain.on('LoadDirectory', ()=>{
   dialog.showOpenDialog({
     title: 'Select the Folder to be uploaded',
-    defaultPath: path.join(__dirname, './SavedSurveys/'),
+    defaultPath: path.join(__dirname, './Surveys/'),
     buttonLabel: 'Upload',
     // Restricting the user to only Text Files.
     filters: [
@@ -392,7 +392,7 @@ ipcMain.on('LoadDirectory', ()=>{
 ipcMain.on('LoadMultipleSurvey', ()=>{
   dialog.showOpenDialog({
     title: 'Select the Files to be uploaded',
-    defaultPath: path.join(__dirname, './SavedSurveys/'),
+    defaultPath: path.join(__dirname, './Surveys/'),
     buttonLabel: 'Upload',
     // Restricting the user to only Text Files.
     filters: [
@@ -442,7 +442,7 @@ ipcMain.on('SaveSurvey',()=>{
   let min = date.getMinutes();
 
   let newdate = "Survey__" + month + "-" + day + "-" + year + "_" + hours + "-" + min;
-  let dpath = './SavedSurveys/' + newdate + '.json'
+  let dpath = './Surveys/' + newdate + '.json'
 
     //TODO: IMPLEMENT DIALOG OPTION FOR SAVE EVENT LISTENER
   dialog.showSaveDialog({
