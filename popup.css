@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css?family=Lato');
 /*Style the popup from clicking a furniture */
 #popup
 {
@@ -95,7 +94,7 @@
     margin: 4px 2px;
     cursor: pointer;
     font-weight: bolder;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #rotateSlider
@@ -110,7 +109,7 @@
 	position: fixed;
 	top: 85px;
 	right: 100px;
-	font-family: 'Lato', sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #lock
@@ -132,7 +131,7 @@
     margin: 4px 2px;
     cursor: pointer;
     font-weight: bolder;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #save
@@ -154,7 +153,7 @@
 	margin: 4px 2px;
 	cursor: pointer;
 	font-weight: bolder;
-	font-family: 'Lato', sans-serif;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #checkall
@@ -174,7 +173,7 @@
     font-size: 15px;
     cursor: pointer;
     font-weight: bolder;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #seat_operator
@@ -185,7 +184,7 @@
 	position: fixed;
 	font-size: 15px;
 	font-weight: bolder;
- 	font-family: 'Lato', sans-serif;
+ 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #minus
@@ -207,7 +206,7 @@
     margin: 4px 2px;
     cursor: pointer;
     font-weight: bolder;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 #plus
@@ -229,7 +228,7 @@
     margin: 4px 2px;
     cursor: pointer;
     font-weight:bolder;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .div
@@ -246,7 +245,7 @@
     padding: 8px;
     margin: 8px;
     font-size: 20px;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .dropbutton, .wb
@@ -265,7 +264,7 @@
     cursor: pointer;
     color: white;
     font-size: 20px;
-    font-family: 'Lato', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .dropbutton:after, .wb:after
