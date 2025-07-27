@@ -27,6 +27,8 @@ const layoutMenu = document.getElementById('LayoutMenu');
 //Button References
 const backBtn = document.getElementById('backBtn');
 const surveyBtn = document.getElementById('surveyBtn');
+const submitFloor = document.getElementById('submitFloor');
+const floorDropdown = document.getElementById('floor');
 const saveFloor = document.getElementById('saveFloor');
 const saveLayFloor = document.getElementById('saveLayFloor');
 const saveSurvey = document.getElementById('saveSurvey');
@@ -38,10 +40,20 @@ const saveLay = document.getElementById('saveLayout');
 const loadLayout = document.getElementById('loadSavedLayout');
 const laySubmitBtn = document.getElementById('laySubmitFloor');
 const layFloorSelect = document.getElementById('layfloor');
+const subsurveyFloor = document.getElementById('subsurveyFloor');
+const msubsurveyFloor = document.getElementById('msubsurveyFloor');
+const sfloorDropdown = document.getElementById('sfloor');
+const msfloorDropdown = document.getElementById('msfloor');
 
 //Layout Builder Button references
 const layoutBuilder = document.getElementById('layoutBuilder');
 const getImage = document.getElementById('getImage');
+
+// Global variables for map state
+window.sfloor = 1;
+window.isSurvey = false;
+window.isLayoutEdit = false;
+window.isMulti = false;
 
 
 
@@ -77,8 +89,8 @@ backBtn.addEventListener('click',()=>{
 });
 
 surveyBtn.addEventListener('click',()=>{
-    //Load Layout from here
-    ipcRenderer.send('LoadLayout');
+    //Load Layout for survey purposes
+    ipcRenderer.send('LoadLayoutForSurvey');
     
 });
 
@@ -153,15 +165,21 @@ ipcRenderer.on('LoadMultiSurveySuccess', function(event, data){
 });
 
 
-ipcRenderer.on('LoadLayoutSuccess', function(event, data){
-    // convert array of entries into layout object for builder
+// Handle layout load for survey purposes (different from layout editing)
+ipcRenderer.on('LoadLayoutForSurveySuccess', function(event, data){
+    // convert array of entries into layout object for survey
     global.layout = Object.fromEntries(data);
     // ensure Areas exists to avoid undefined errors
     if (!global.layout.Areas) global.layout.Areas = {};
     ["Floor 1","Floor 2","Floor 3"].forEach(f => {
         if (!global.layout.Areas[f]) global.layout.Areas[f] = {};
     });
-    //process layout data here from csv to JSON
+    // Set survey mode flags
+    window.isSurvey = true;
+    window.isLayoutEdit = false;
+    window.isMulti = false;
+    
+    //process layout data for survey - show survey floor selection
     floorSelect.style.display = "block";
     loadSurvey.disabled = true;
     layoutBuilder.disabled = true;
@@ -253,6 +271,45 @@ laySubmitBtn.addEventListener('click', () => {
   // 2) set the globals and redraw in layout-edit mode
   window.sfloor       = parseInt(layFloorSelect.value, 10);
   window.isLayoutEdit = true;
+  addMapPic();
+});
+
+// Handle regular survey floor selection
+submitFloor.addEventListener('click', () => {
+  // 1) show the map view  
+  mapView.style.display = 'block';
+  
+  // 2) set the globals and redraw in survey mode
+  window.sfloor = parseInt(floorDropdown.value, 10);
+  window.isSurvey = true;
+  window.isLayoutEdit = false;
+  window.isMulti = false;
+  addMapPic();
+});
+
+// Handle survey floor selection (for viewing loaded survey statistics)
+subsurveyFloor.addEventListener('click', () => {
+  // 1) show the map view
+  mapView.style.display = 'block';
+  
+  // 2) set the globals and redraw in survey viewing mode
+  window.sfloor = parseInt(sfloorDropdown.value, 10);
+  window.isSurvey = true;
+  window.isLayoutEdit = false;
+  window.isMulti = false;
+  addMapPic();
+});
+
+// Handle multi-survey floor selection (for analysis)
+msubsurveyFloor.addEventListener('click', () => {
+  // 1) show the map view
+  mapView.style.display = 'block';
+  
+  // 2) set the globals and redraw in multi-survey mode
+  window.sfloor = parseInt(msfloorDropdown.value, 10);
+  window.isSurvey = false;
+  window.isLayoutEdit = false;
+  window.isMulti = true;
   addMapPic();
 });
 

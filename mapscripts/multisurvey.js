@@ -13,6 +13,13 @@ var dateMap = new Map();
 var dataWindow = document.getElementById('surveyData');
 
 function display_multisurvey(data, sfloor, sfloorName){
+    console.log("display_multisurvey called with:", {data: data, sfloor: sfloor, sfloorName: sfloorName});
+    console.log("data structure:", data);
+    console.log("data length:", data.length);
+    if(data.length > 0) {
+        console.log("first survey structure:", data[0]);
+        console.log("first survey keys:", Object.keys(data[0]));
+    }
 
 	if(mymap.hasLayer(surveyLayer)){
         mymap.removeLayer(surveyLayer);
@@ -22,6 +29,7 @@ function display_multisurvey(data, sfloor, sfloorName){
     }
 
     let surveyareadata = data[0][4][1][sfloorName];
+    console.log("surveyareadata:", surveyareadata);
 	total_floor_vistors = 0;
 
     for(i in surveyareadata){
@@ -46,8 +54,13 @@ function display_multisurvey(data, sfloor, sfloorName){
     }
 
 	//Change this to calculate this by computing array of dates and chosing the earliest and latest
-	let timestart = data[0][5]['Time Start'];
-	let timeend = data[data.length - 1][6]['Time End'];
+	console.log("Trying to access timing data...");
+	console.log("data[0] keys:", data[0] ? Object.keys(data[0]) : "data[0] is undefined");
+	console.log("data[0][5]:", data[0] ? data[0][5] : "data[0] is undefined");
+	console.log("data[data.length - 1][6]:", data[data.length - 1] ? data[data.length - 1][6] : "last item undefined");
+	
+	let timestart = data[0][5] ? data[0][5]['Time Start'] : "Unknown";
+	let timeend = data[data.length - 1][6] ? data[data.length - 1][6]['Time End'] : "Unknown";
 
 	dataWindow.style.display = "block";
 	let datastring = "<strong>Survey Number: </strong>"
@@ -66,16 +79,24 @@ function display_multisurvey(data, sfloor, sfloorName){
     for(var a in data){
 		num_surveys++;
         let surveydata = data[a];
+        console.log("Processing survey", a, ":", surveydata);
+        console.log("Survey keys:", Object.keys(surveydata));
+        
         let floor = surveydata[sfloor];
+        console.log("Floor data for floor", sfloor, ":", floor);
+        
 		let date = surveydata[5];
+		console.log("Date data:", date);
+		
 		dateMap.set(a, date);
         let surv_array = [];
 
         for(i in floor){
-
+            console.log("Processing floor section", i, ":", floor[i]);
             let s_array = floor[i];
 
             for(j in s_array){
+                console.log("Processing furniture", j, ":", s_array[j]);
                 //Check to see if furn exists in furnmap based on furn ID, if not create new element, if it does, add info to map
 				let total_occupants = 0;
 				if(furnMap.has(s_array[j].furn_id)){

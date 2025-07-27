@@ -16,7 +16,17 @@ function markerClick(e){
 	document.getElementById("save").style.top = "40.5%";
 	
 	selected_furn = furnMap.get(this.options.fid);
-	console.log(selected_furn);
+	console.log('markerClick - looking for fid:', this.options.fid);
+	console.log('markerClick - selected_furn:', selected_furn);
+	console.log('markerClick - furnMap size:', furnMap.size);
+	console.log('markerClick - furnMap keys:', Array.from(furnMap.keys()));
+	
+	if(!selected_furn) {
+		console.error('Could not find furniture with fid:', this.options.fid);
+		alert('Error: Could not find furniture data. Please try again.');
+		return;
+	}
+	
 	selected_marker = this;
 	selected_marker.dragging.disable();
 	

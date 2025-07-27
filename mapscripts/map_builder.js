@@ -33,9 +33,48 @@ var PlusBtn = document.getElementById('plus');
 // expose addMapPic to renderer
 window.addMapPic = addMapPic;
 
+// Helper functions to show and hide popup
+function showPopup() {
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('popup-overlay');
+    console.log('showPopup called - popup element:', popup);
+    console.log('showPopup called - overlay element:', overlay);
+    
+    if(popup && overlay) {
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+        console.log('Popup shown');
+    } else {
+        console.error('Popup elements not found! popup:', popup, 'overlay:', overlay);
+        // Try to create popup if it doesn't exist
+        if(!popup || !overlay) {
+            console.log('Attempting to reinitialize popup...');
+            reinializePop();
+            // Try again after reinitializing
+            const newPopup = document.getElementById('popup');
+            const newOverlay = document.getElementById('popup-overlay');
+            if(newPopup && newOverlay) {
+                newOverlay.style.display = 'block';
+                newPopup.style.display = 'block';
+                console.log('Popup shown after reinitializing');
+            }
+        }
+    }
+}
+
+function hidePopup() {
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('popup-overlay');
+    if(popup && overlay) {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+        console.log('Popup hidden');
+    }
+}
+
 function reinializePop(){
     let obj = document.getElementById('MapContainer');
-    obj.insertAdjacentHTML('afterend', '<div id="popup"><div id="seat_div"></div><div id="wb_div"></div><button id="save" style="display:none">Save and Exit</button><button id="lock">Unlock</button><button id="checkall" style="display:none">Check All</button><label id="seat_operator"></label><button id="minus" style="display:none">-</button><button id="plus" style="display:none">+</button></div>');
+    obj.insertAdjacentHTML('afterend', '<div id="popup-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;"></div><div id="popup" style="display: none;"><button id="closePopup" style="position: absolute; top: 10px; right: 10px; background: #ff4444; color: white; border: none; border-radius: 3px; padding: 5px 10px; cursor: pointer; font-weight: bold; z-index: 1001;">✕</button><div id="seat_div"></div><div id="wb_div"></div><button id="save" style="display:none">Save and Exit</button><button id="lock">Unlock</button><button id="checkall" style="display:none">Check All</button><label id="seat_operator"></label><button id="minus" style="display:none">-</button><button id="plus" style="display:none">+</button></div>');
     let popup= document.getElementById('popup');
 
     SaveBtn = document.getElementById('save');
@@ -59,21 +98,38 @@ function reinializePop(){
     });
 
     //called when save button is clicked on popup.
-    SaveBtn.addEventListener('click', ()=>{
+    SaveBtn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Save button clicked');
+        
         var occupants = document.getElementById("occupantInput");
         if(occupants)
         {
             selected_furn.totalOccupants = occupants.value;
         }
-        selected_marker.setOpacity(1);
-        selected_furn.seat_places = temp_seat_places;
         
-        if(temp_wb != [])
+        if(selected_marker) {
+            selected_marker.setOpacity(1);
+        }
+        
+        if(selected_furn && temp_seat_places) {
+            selected_furn.seat_places = temp_seat_places;
+        }
+        
+        if(temp_wb && temp_wb.length > 0)
         {
             selected_furn.whiteboard = temp_wb;
         }
         
-        mymap.closePopup();
+        // Hide the popup after saving
+        hidePopup();
+        
+        // Also try to close any Leaflet popups
+        if(typeof mymap !== 'undefined' && mymap.closePopup) {
+            mymap.closePopup();
+        }
     });
 
     //helps lock or unlock furniture item on movement
@@ -90,6 +146,10 @@ function reinializePop(){
             selected_marker.dragging.disable();
             lockButton.innerText = "Unlock";
         }
+        
+        // Hide the popup after locking/unlocking
+        hidePopup();
+        
         mymap.closePopup();
     });
 
@@ -97,6 +157,26 @@ function reinializePop(){
     CheckAllBtn.addEventListener('click', ()=>{
         checkAll(selected_furn);
     });
+
+    //called when close button is clicked to close popup
+    const closePopupBtn = document.getElementById('closePopup');
+    if(closePopupBtn) {
+        closePopupBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hidePopup();
+        });
+    }
+
+    // Add click listener to overlay to close popup when clicking outside
+    const overlay = document.getElementById('popup-overlay');
+    if(overlay) {
+        overlay.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            hidePopup();
+        });
+    }
 }
 
 //Initalize Map
@@ -159,7 +239,35 @@ var longMax = 508.18;
 var longMin = 42.18;
 
 function surveyClick(e){
-    let seats = this.options.seats;
+    console.log('surveyClick called!');
+    
+    // Show the popup and call the main marker click function for survey popup
+    showPopup();
+    
+    // Debug: Log the marker options and furnMap
+    console.log('Survey click - marker options:', this.options);
+    console.log('Survey click - furnMap size:', furnMap.size);
+    console.log('Survey click - looking for fid:', this.options.fid);
+    console.log('Survey click - furnMap contents:', Array.from(furnMap.entries()));
+    
+    // Check if markerClick function exists
+    if(typeof markerClick === 'function') {
+        console.log('Calling markerClick...');
+        markerClick.call(this, e);
+    } else {
+        console.error('markerClick function not found!');
+    }
+    
+    // Ensure save button is visible and clickable after markerClick
+    setTimeout(() => {
+        const saveBtn = document.getElementById('save');
+        if(saveBtn) {
+            saveBtn.style.display = 'block';
+            console.log('Save button made visible');
+        } else {
+            console.log('Save button not found');
+        }
+    }, 100);
 }
 
 //Proccesses clicking the map
@@ -344,7 +452,8 @@ function display_survey(surveyArray){
             numSeats: num_seats,
             seats: seat_places,
             fid: furn_id.toString()
-        }).addTo(surveyLayer).bindPopup(popupString, surveyPopDim);
+        }).addTo(surveyLayer);
+        // Note: Not binding Leaflet popup since we use custom popup system
 
         //make marker clickable
         marker.on('click', surveyClick);
@@ -403,7 +512,8 @@ function addMapPic(){
     isMulti = window.isMulti;
     isLayoutEdit = window.isLayoutEdit;
     console.log("addMapPic: sfloor=", sfloor, "isLayoutEdit=", isLayoutEdit, "imagepath=", imagepath);
-    console.log("global.layout keys:", Object.keys(global.layout));
+    console.log("global.layout keys:", global.layout ? Object.keys(global.layout) : "global.layout is undefined");
+    console.log("global.survey keys:", global.survey ? Object.keys(global.survey) : "global.survey is undefined");
     //remove old floor imagepath and place newly selected floor imagepath
     if(image != undefined){
         mymap.removeLayer(image);
@@ -419,6 +529,7 @@ function addMapPic(){
         
 
         if(document.getElementById("popup") === null){
+            console.log('Popup not found, calling reinializePop...');
             reinializePop();
             SaveBtn = document.getElementById('save');
             LockBtn = document.getElementById('lock');
@@ -426,6 +537,8 @@ function addMapPic(){
             CheckAllBtn = document.getElementById('checkall');
             MinusBtn = document.getElementById('minus');
             PlusBtn = document.getElementById('plus');
+        } else {
+            console.log('Popup already exists');
         }
     }
 
@@ -436,6 +549,19 @@ function addMapPic(){
         surveyLayer = new L.layerGroup().addTo(mymap);
         surveyAreaLayer = new L.layerGroup().addTo(mymap);
         
+        // Also check for popup in survey mode
+        if(document.getElementById("popup") === null){
+            console.log('Survey mode: Popup not found, calling reinializePop...');
+            reinializePop();
+            SaveBtn = document.getElementById('save');
+            LockBtn = document.getElementById('lock');
+            RotateBtn = document.getElementById('rotate');
+            CheckAllBtn = document.getElementById('checkall');
+            MinusBtn = document.getElementById('minus');
+            PlusBtn = document.getElementById('plus');
+        } else {
+            console.log('Survey mode: Popup already exists');
+        }
     }
 
 
@@ -473,9 +599,111 @@ function addMapPic(){
             
             display_multisurvey(global.survey, sfloor, sfloorName);
         } 
+        else if(isSurvey === true && global.layout){
+            // Survey mode with loaded layout (not survey data) - CHECK THIS FIRST!
+            console.log("Survey with layout branch: sfloorName=Floor "+sfloor);
+            const floorKey = "Floor " + sfloor;
+            const areasObj = (global.layout && global.layout.Areas) || {};
+            const areaDataLog = areasObj[floorKey] || {};
+            console.log("Areas data for survey:", areaDataLog);
+            const furnDataLog = (global.layout && global.layout[floorKey]) || [];
+            console.log("Furniture data for survey:", furnDataLog);
+            
+            areaMap.clear();
+            
+            // Set survey times for new survey session
+            SurveyStartTime = new Date().toLocaleString();
+            SurveyEndTime = "In Progress";
+            
+            // 1) draw saved Areas for survey
+            let sfloorName = floorKey;
+            let areaData = areasObj[sfloorName] || {};
+            for (let aKey in areaData) {
+                let a = areaData[aKey];
+                let areaObj = new Area(aKey, a.facilities_id, a.name);
+                // a.points is an object; iterate its keys
+                for (let ptKey in a.points) {
+                    let pt = a.points[ptKey];
+                    areaObj.area_vertices.push(new AreaVertices(pt.v_x, pt.v_y));
+                }
+                let poly = drawArea(areaObj);
+                areaObj.polyArea = poly;
+                areaMap.set(aKey, areaObj);
+                poly.addTo(surveyAreaLayer);
+            }
+
+            // 2) load furniture data for survey display
+            let furnData = (global.layout && global.layout[sfloorName]) || [];
+            console.log("Loading furniture data for survey:", furnData);
+            let surveyItems = [];
+            
+            if(Array.isArray(furnData)) {
+                // Handle case where furnData is an array
+                for(let f of furnData) {
+                    if(f && f.fid) {
+                        let obj = new Furniture(f.fid, f.num_seats || 0);
+                        obj.furn_id = f.fid.toString();  // Ensure string to match marker fid
+                        obj.x = f.x || 0;
+                        obj.y = f.y || 0;
+                        obj.ftype = f.ftype || 1;
+                        obj.degree_offset = f.degree_offset || 0;
+                        obj.seat_places = []; // Initialize empty seat places for survey
+                        obj.area_id = f.area_id || null;
+                        obj.totalOccupants = 0; // Initialize for survey
+                        obj.whiteboard = []; // Initialize whiteboard array
+                        surveyItems.push(obj);
+                        console.log('Created survey furniture object:', obj);
+                    }
+                }
+            } else if(typeof furnData === 'object') {
+                // Handle case where furnData is an object with numeric keys
+                for(let idx in furnData){
+                    let f = furnData[idx];
+                    if(f && f.fid) {
+                        let obj = new Furniture(f.fid, f.num_seats || 0);
+                        obj.furn_id = f.fid.toString();  // Ensure string to match marker fid
+                        obj.x = f.x || 0;
+                        obj.y = f.y || 0;
+                        obj.ftype = f.ftype || 1;
+                        obj.degree_offset = f.degree_offset || 0;
+                        obj.seat_places = []; // Initialize empty seat places for survey
+                        obj.area_id = f.area_id || null;
+                        obj.totalOccupants = 0; // Initialize for survey
+                        obj.whiteboard = []; // Initialize whiteboard array
+                        surveyItems.push(obj);
+                        console.log('Created survey furniture object:', obj);
+                    }
+                }
+            }
+            
+            console.log("Survey items prepared:", surveyItems);
+            
+            // 3) populate the furnMap for survey popup functionality
+            furnMap.clear();
+            surveyItems.forEach(item => {
+                furnMap.set(item.furn_id, item); // Both are now strings
+                console.log('Added to furnMap:', item.furn_id, item);
+            });
+            
+            // 4) display furniture in survey mode
+            display_survey(surveyItems);
+        }
         else if(isSurvey === true){
+            console.log("Loading saved survey data for floor:", sfloor);
+            console.log("sfloorName:", sfloorName);
+            console.log("global.survey structure:", global.survey);
+            
             let surveydata = global.survey[sfloor];
+            console.log("surveydata for floor", sfloor, ":", surveydata);
+            
             let surveyareadata = global.survey[4][1][1][sfloorName];
+            console.log("surveyareadata:", surveyareadata);
+            
+            if(!surveydata) {
+                console.error("No survey data found for floor", sfloor);
+                return;
+            }
+            
             SurveyStartTime = global.survey[5][1]["Time Start"];
             SurveyEndTime = global.survey[6][1]["Time End"];
             let floor = surveydata[1];
@@ -507,6 +735,7 @@ function addMapPic(){
 
                 for(j in s_array){
                     let furn = new Furniture(s_array[j].furn_id, s_array[j].num_seats);
+                    furn.furn_id = s_array[j].furn_id.toString(); // Ensure string to match marker fid
                     furn.x = s_array[j].x;
                     furn.y = s_array[j].y;
                     furn.ftype = s_array[j].ftype;
@@ -517,6 +746,13 @@ function addMapPic(){
                     surv_array.push(furn);
                 }
             }
+
+            // Populate furnMap for survey popup functionality
+            furnMap.clear();
+            surv_array.forEach(item => {
+                furnMap.set(item.furn_id, item);
+                console.log('Added to furnMap for survey:', item.furn_id, item);
+            });
 
             display_survey(surv_array);
         }

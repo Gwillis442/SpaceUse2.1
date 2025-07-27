@@ -212,6 +212,51 @@ ipcMain.on('SaveLayout', ()=>{
     });
 });
 
+ipcMain.on('LoadLayoutForSurvey',()=>{
+  //Load File for survey purposes
+  dialog.showOpenDialog({
+    title: 'Select the Layout to be uploaded for Survey',
+    defaultPath: path.join(__dirname, './Layouts/'),
+    buttonLabel: 'Upload',
+    // Restricting the user to only Text Files.
+    filters: [
+      {
+        name: 'Text Files',
+        extensions: ['json']
+      }, ],
+    // Specifying the File Selector Property
+    properties: ['openFile']
+  }).then(file => {
+    // Stating whether dialog operation was
+    // cancelled or not.
+    console.log(file.canceled);
+    if (!file.canceled) {
+      // Updating the GLOBAL filepath variable 
+      // to user-selected file.
+      global.filepath = file.filePaths[0].toString();
+
+      let rawdata = fs.readFileSync(global.filepath);
+      let json = JSON.parse(rawdata);
+      var data = [];
+      for(var i in json){
+        data.push([i, json[i]]);
+      }
+
+      if(data[0][1] != true){
+        console.log("Not A Layout");
+        return;
+      }
+      global.shared.surveyArray[4] = data[4];
+      win.webContents.send('LoadLayoutForSurveySuccess', data);
+      
+    }  
+  }).catch(err => {
+    console.log(err)
+  });
+
+
+});
+
 ipcMain.on('LoadLayout',()=>{
   //Load File
   dialog.showOpenDialog({
