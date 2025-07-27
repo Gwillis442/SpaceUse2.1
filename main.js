@@ -125,6 +125,9 @@ ipcMain.on('layoutCreate', function(event){
   global.shared.createLayout.push(f1);
   global.shared.createLayout.push(f2);
   global.shared.createLayout.push(f3);
+  
+  // Send signal to clear any existing layout data for blank layout
+  win.webContents.send('CreateBlankLayout');
 });
 
 ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){

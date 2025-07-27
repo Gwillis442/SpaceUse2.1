@@ -23,6 +23,7 @@ const mapView = document.getElementById('mapView');
 const multimenu = document.getElementById('msurveySelect');
 const msurveyFloorSelect = document.getElementById('msurveyFloorSelect');
 const layoutMenu = document.getElementById('LayoutMenu');
+const navContainer = document.querySelector('.navContainer');
 
 //Button References
 const backBtn = document.getElementById('backBtn');
@@ -65,6 +66,7 @@ getNameForm.addEventListener('submit', function (event){
     let sname = firstname + " " + lastname;
     ipcRenderer.send('toMain', sname);
     getNameForm.style.display = "none";
+    navContainer.style.display = "none"; // Hide header after login
     home.style.display = 'block';
 });
 
@@ -83,6 +85,7 @@ backBtn.addEventListener('click',()=>{
     showMultiSurvey.disabled = false;
     layoutBuilder.disabled = false;
     getNameForm.style.display = "block";
+    navContainer.style.display = "block"; // Show header when returning to login
     document.getElementById("surveyData").style.display = "none";
     isSurvey = false;
     isMulti = false;
@@ -114,6 +117,23 @@ function loadAreas(){
 
 ipcRenderer.on('LoadAreasSuccess', function(event, data){
     addAreas(data);
+})
+
+// Handle creating a blank layout
+ipcRenderer.on('CreateBlankLayout', function(event){
+    // Clear any existing layout data to ensure blank start
+    global.layout = {
+        "Layout": true,
+        "Floor 1": {},
+        "Floor 2": {},
+        "Floor 3": {},
+        "Areas": {
+            "Floor 1": {},
+            "Floor 2": {},
+            "Floor 3": {}
+        }
+    };
+    console.log("Cleared global.layout for blank layout creation");
 })
 
 //Render Functions for Multi Survey
