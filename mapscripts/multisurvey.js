@@ -21,46 +21,75 @@ function display_multisurvey(data, sfloor, sfloorName){
         console.log("first survey keys:", Object.keys(data[0]));
     }
 
+	// Clear existing layers and maps
 	if(mymap.hasLayer(surveyLayer)){
         mymap.removeLayer(surveyLayer);
         mymap.removeLayer(surveyAreaLayer);
-        surveyLayer = new L.layerGroup().addTo(mymap);
-        surveyAreaLayer = new L.layerGroup().addTo(mymap);
     }
+    
+    // Create layers but add them in the correct order: areas first, then furniture on top
+    surveyAreaLayer = new L.layerGroup().addTo(mymap);
+    surveyLayer = new L.layerGroup().addTo(mymap);
+    
+    // Clear the furniture map for fresh data
+    furnMap.clear();
+    console.log("Cleared furnMap for multisurvey processing");
 
-    let surveyareadata = data[0][4][1][sfloorName];
+    // Find area data - it's in element [4] of the survey array
+    let surveyareadata = null;
+    if(data.length > 0 && data[0][4] && data[0][4][1]) {
+        surveyareadata = data[0][4][1][sfloorName];
+    }
     console.log("surveyareadata:", surveyareadata);
 	total_floor_vistors = 0;
 
-    for(i in surveyareadata){
-		
-        let cur_area_data = surveyareadata[i];
-        let new_area = new Area(i, cur_area_data["facilities_id"], cur_area_data["name"]);
-        let points = surveyareadata[i].points;
-        for(j in points){
-            curpoint = points[j];
-            let x = curpoint.v_x;
-            let y = curpoint.v_y;
-            var newVert = new AreaVertices(x, y);
-            new_area.area_vertices.push(newVert);
-        }
+    if(surveyareadata) {
+        for(i in surveyareadata){
+            let cur_area_data = surveyareadata[i];
+            let new_area = new Area(i, cur_area_data["facilities_id"], cur_area_data["name"]);
+            let points = surveyareadata[i].points;
+            for(j in points){
+                curpoint = points[j];
+                let x = curpoint.v_x;
+                let y = curpoint.v_y;
+                var newVert = new AreaVertices(x, y);
+                new_area.area_vertices.push(newVert);
+            }
 
-		var polyItem = drawArea(new_area);
-        new_area.polyArea = polyItem;
-        areaMap.set(i, new_area);
-        
-        //polyItem.addTo(surveyaAreaLayer);
-        
+            var polyItem = drawArea(new_area);
+            new_area.polyArea = polyItem;
+            areaMap.set(i, new_area);
+            
+            //polyItem.addTo(surveyaAreaLayer);
+            
+        }
+    } else {
+        console.log("No area data found for floor", sfloorName);
     }
 
 	//Change this to calculate this by computing array of dates and chosing the earliest and latest
 	console.log("Trying to access timing data...");
-	console.log("data[0] keys:", data[0] ? Object.keys(data[0]) : "data[0] is undefined");
-	console.log("data[0][5]:", data[0] ? data[0][5] : "data[0] is undefined");
-	console.log("data[data.length - 1][6]:", data[data.length - 1] ? data[data.length - 1][6] : "last item undefined");
+	console.log("data[0] structure:", data[0]);
 	
-	let timestart = data[0][5] ? data[0][5]['Time Start'] : "Unknown";
-	let timeend = data[data.length - 1][6] ? data[data.length - 1][6]['Time End'] : "Unknown";
+	// Find time start - it's in element [5] for first survey
+	let timestart = "Unknown";
+	let timeend = "Unknown";
+	
+	// Look for start time in first survey
+	for(let i = 0; i < data[0].length; i++) {
+		if(data[0][i] && data[0][i]["Time Start"]) {
+			timestart = data[0][i]["Time Start"];
+			break;
+		}
+	}
+	
+	// Look for end time in last survey  
+	for(let i = 0; i < data[data.length - 1].length; i++) {
+		if(data[data.length - 1][i] && data[data.length - 1][i]["Time End"]) {
+			timeend = data[data.length - 1][i]["Time End"];
+			break;
+		}
+	}
 
 	dataWindow.style.display = "block";
 	let datastring = "<strong>Survey Number: </strong>"
@@ -80,73 +109,109 @@ function display_multisurvey(data, sfloor, sfloorName){
 		num_surveys++;
         let surveydata = data[a];
         console.log("Processing survey", a, ":", surveydata);
-        console.log("Survey keys:", Object.keys(surveydata));
         
-        let floor = surveydata[sfloor];
-        console.log("Floor data for floor", sfloor, ":", floor);
+        // Find the floor data in the survey array
+        let floor = null;
+        let date = null;
         
-		let date = surveydata[5];
-		console.log("Date data:", date);
-		
-		dateMap.set(a, date);
-        let surv_array = [];
-
-        for(i in floor){
-            console.log("Processing floor section", i, ":", floor[i]);
-            let s_array = floor[i];
-
-            for(j in s_array){
-                console.log("Processing furniture", j, ":", s_array[j]);
-                //Check to see if furn exists in furnmap based on furn ID, if not create new element, if it does, add info to map
-				let total_occupants = 0;
-				if(furnMap.has(s_array[j].furn_id)){
-					let curfurn = furnMap.get(s_array[j].furn_id);
-					for(var k = 0; k < curfurn.seat_places.length; k++){
-
-						let seat = curfurn.seat_places[k];
-						if(seat.occupied === true){
-							total_occupants++;					
-						}
-					}
-					curfurn.sumOccupants += total_occupants;
-					let lastitem = curfurn.arrOccupants[curfurn.arrOccupants.length - 1]
-					curfurn.arrOccupants.push(total_occupants);
-					if(lastitem <= total_occupants){
-						curfurn.peakuse = date;
-						curfurn.peakPop = total_occupants;
-					}
-					
-				}
-				else{
-					let furn = new Furniture(s_array[j].furn_id, s_array[j].num_seats);
-					for(var k = 0; k < furn.seat_places.length; k++){
-
-						let seat = furn.seat_places[k];
-						if(seat.occupied === true){
-							total_occupants++;					
-						}
-					}
-
-					//TODO:: Need to save array of activities and average activities for each furniture
-					//iterate through activity map
-					furn.x = s_array[j].x;
-					furn.y = s_array[j].y;
-					furn.ftype = s_array[j].ftype;
-					furn.seat_places = s_array[j].seat_places;
-					furn.degree_offset = s_array[j].degree_offset;
-					furn.area_id = s_array[j].area_id;
-					furn.sumOccupants = total_occupants;
-					furn.arrOccupants.push(total_occupants);
-					furn.peakuse = date;
-
-					furnMap.set(furn.furn_id, furn);
-				}
-                
+        // Look for floor data (like "Floor One", "Floor Two", "Floor Three")
+        for(let i = 0; i < surveydata.length; i++) {
+            if(surveydata[i] && typeof surveydata[i] === 'object') {
+                let keys = Object.keys(surveydata[i]);
+                if(keys.length > 0) {
+                    let key = keys[0];
+                    if(key.includes("Floor")) {
+                        // Convert floor number to match the key format
+                        let floorKey = "";
+                        switch(sfloor) {
+                            case 1: floorKey = "Floor One"; break;
+                            case 2: floorKey = "Floor Two"; break;
+                            case 3: floorKey = "Floor Three"; break;
+                        }
+                        if(key === floorKey) {
+                            floor = surveydata[i][key];
+                            console.log("Found floor data for", floorKey, ":", floor);
+                            break;
+                        }
+                    }
+                }
             }
         }
-    }
+        
+        // Look for date data
+        for(let i = 0; i < surveydata.length; i++) {
+            if(surveydata[i] && surveydata[i]["Time Start"]) {
+                date = surveydata[i];
+                break;
+            }
+        }
+        
+        console.log("Floor data:", floor);
+        console.log("Date data:", date);
+        
+        if(!floor) {
+            console.log("No floor data found for survey", a, "floor", sfloor);
+            continue;
+        }
+		
+		dateMap.set(a, date);
 
+        // Process furniture objects directly (floor is already the furniture object)
+        for(let furn_id in floor){
+            let s_furniture = floor[furn_id];
+            console.log("Processing furniture", furn_id, ":", s_furniture);
+            
+            //Check to see if furn exists in furnmap based on furn ID, if not create new element, if it does, add info to map
+			let total_occupants = 0;
+			if(furnMap.has(s_furniture.furn_id)){
+				let curfurn = furnMap.get(s_furniture.furn_id);
+				for(var k = 0; k < s_furniture.seat_places.length; k++){
+					let seat = s_furniture.seat_places[k];
+					if(seat.occupied === true){
+						total_occupants++;					
+					}
+				}
+				curfurn.sumOccupants += total_occupants;
+				let lastitem = curfurn.arrOccupants[curfurn.arrOccupants.length - 1]
+				curfurn.arrOccupants.push(total_occupants);
+				if(lastitem <= total_occupants){
+					curfurn.peakuse = date;
+					curfurn.peakPop = total_occupants;
+				}
+			}
+			else{
+				let furn = new Furniture(s_furniture.furn_id, s_furniture.num_seats);
+				for(var k = 0; k < s_furniture.seat_places.length; k++){
+					let seat = s_furniture.seat_places[k];
+					if(seat.occupied === true){
+						total_occupants++;					
+					}
+				}
+
+				//TODO:: Need to save array of activities and average activities for each furniture
+				//iterate through activity map
+				furn.x = s_furniture.x;
+				furn.y = s_furniture.y;
+				furn.ftype = s_furniture.ftype;
+				furn.seat_places = s_furniture.seat_places;
+				furn.degree_offset = s_furniture.degree_offset;
+				furn.area_id = s_furniture.area_id;
+				furn.sumOccupants = total_occupants;
+				furn.arrOccupants.push(total_occupants);
+				furn.peakuse = date;
+
+				furnMap.set(furn.furn_id, furn);
+				console.log("Created new furniture entry for ID:", furn.furn_id);
+			}
+        }
+    }
+    
+    console.log("Finished processing all surveys. FurnMap size:", furnMap.size);
+
+	// Now render markers for all furniture
+	console.log("Starting to render furniture markers...");
 	for(let[key, value] of furnMap){
+		console.log("Rendering furniture marker for ID:", key, "data:", value);
 
 	
 
@@ -161,7 +226,7 @@ function display_multisurvey(data, sfloor, sfloorName){
 
 		var furn_id = value.furn_id;
 
-        var num_seats = parseInt(key.num_seats);
+        var num_seats = parseInt(value.num_seats);
         //var newFurn = new Furniture(furn_id, num_seats);
 
         var x = value.x;
@@ -191,8 +256,11 @@ function display_multisurvey(data, sfloor, sfloorName){
             draggable: false,
             ftype: furniture_type,
             numSeats: num_seats,
-            fid: furn_id.toString()
+            fid: furn_id.toString(),
+            zIndexOffset: 1000  // Ensure furniture markers appear above area polygons
         }).addTo(surveyLayer).bindPopup(popupString, surveyPopDim);
+
+        console.log("Added marker for furniture ID:", furn_id, "at position:", latlng);
 
         //make marker clickable
         marker.on('click', surveyClick);
@@ -221,6 +289,8 @@ function display_multisurvey(data, sfloor, sfloorName){
 	}
 
 	calculateAreaData();
+	// Restore area polygons but make them non-interactive so furniture markers can be clicked
+	console.log("Area data calculated and polygons added to map (non-interactive)");
 	mymap.invalidateSize();
 }
 
@@ -299,7 +369,10 @@ function calculateAreaPeaks(cur_area){
 
 	cur_area.peakDate = peakdate;
 
-	drawAreaMulti(cur_area).addTo(surveyAreaLayer);
+	// Add area polygons to map with popups for area data analysis
+	let areaPoly = drawAreaMulti(cur_area);
+	areaPoly.addTo(surveyAreaLayer);
+	console.log("Added area polygon for", cur_area.area_name, "with popup for area data");
 }
 
 function drawAreaMulti(area){
@@ -309,7 +382,12 @@ function drawAreaMulti(area){
 		curVerts.push([area_verts.x,area_verts.y]);
 	}
 
-	var poly = L.polygon(curVerts);
+	var poly = L.polygon(curVerts, {
+		weight: 2,
+		opacity: 0.8,
+		fillOpacity: 0.1,  // Make area polygons more transparent so furniture is clearly visible
+		interactive: true  // Ensure areas are clickable
+	});
 	popupString = "<strong>"+area.area_name +"</strong></br>Number of Seats: "
 		+ area.num_seats +"</br>Average Area Population: " + Math.round((area.avgPopArea) * 100)/100
 		+"</br>Percentage Use: "
@@ -323,7 +401,10 @@ function drawAreaMulti(area){
 		+ area.peakDate
 		+ "</br><hr>";
 
+	// Restore popup binding to area polygons for area data analysis
 	poly.bindPopup(popupString);
+	console.log("Created area polygon for", area.area_name, "with popup for area data analysis");
+	
 	dataWindow.innerHTML += popupString;
 	let area_string = '';
 	if(area.num_seats != 0){
