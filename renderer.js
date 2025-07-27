@@ -35,6 +35,9 @@ const showMultiSurvey = document.getElementById('loadMultipleSurvey');
 const msurvey = document.getElementById('msurvey');
 const dsurvey = document.getElementById('dsurvey');
 const saveLay = document.getElementById('saveLayout');
+const loadLayout = document.getElementById('loadSavedLayout');
+const laySubmitBtn = document.getElementById('laySubmitFloor');
+const layFloorSelect = document.getElementById('layfloor');
 
 //Layout Builder Button references
 const layoutBuilder = document.getElementById('layoutBuilder');
@@ -151,7 +154,13 @@ ipcRenderer.on('LoadMultiSurveySuccess', function(event, data){
 
 
 ipcRenderer.on('LoadLayoutSuccess', function(event, data){
-    global.layout = data;
+    // convert array of entries into layout object for builder
+    global.layout = Object.fromEntries(data);
+    // ensure Areas exists to avoid undefined errors
+    if (!global.layout.Areas) global.layout.Areas = {};
+    ["Floor 1","Floor 2","Floor 3"].forEach(f => {
+        if (!global.layout.Areas[f]) global.layout.Areas[f] = {};
+    });
     //process layout data here from csv to JSON
     floorSelect.style.display = "block";
     loadSurvey.disabled = true;
@@ -161,13 +170,28 @@ ipcRenderer.on('LoadLayoutSuccess', function(event, data){
 
 //Disable Submit Survey Button by Default.
 //Enable Button after saving first floor to data
-saveFloor.addEventListener('click', ()=>{
-    ipcRenderer.send('SaveFurniture', furnMap, sfloor);
+// send a serializable array of [key, value] pairs instead of the Map itself
+saveFloor.addEventListener('click', () => {
+    // convert Map to plain object for IPC
+    const floorObj = Object.fromEntries(furnMap);
+    ipcRenderer.send('SaveFurniture', floorObj, sfloor);
     alert('Floor ' + sfloor + ' saved!');
 });
 
 saveLayFloor.addEventListener('click', ()=>{
-    ipcRenderer.send('SaveLayoutFloor', furnMap, sfloor);
+        // convert Map to serializable entries array for IPC (only plain data)
+        const layoutEntries = Array.from(furnMap.entries()).map(([key, value]) => {
+            // only include primitive properties needed for layout
+            return [key, {
+                furn_id: value.furn_id,
+                num_seats: value.num_seats,
+                x: value.x,
+                y: value.y,
+                ftype: value.ftype,
+                degree_offset: value.degree_offset
+            }];
+        });
+        ipcRenderer.send('SaveLayoutFloor', layoutEntries, sfloor);
     alert('Floor ' + sfloor + ' layout saved!');
 });
 
@@ -198,7 +222,39 @@ ipcRenderer.on('SaveSuccess', ()=>{
     isSurvey = false;
 });
 
-    
+// Load an existing layout for editing
+loadSavedLayout.addEventListener('click', ()=>{
+    ipcRenderer.send('LoadLayout');
+});
+
+// Handle layout load and prepare builder
+ipcRenderer.on('LoadLayoutSuccess', (event, data) => {
+  // reconstruct layout object from entries
+  global.layout = Object.fromEntries(data);
+  // ensure Areas object exists per floor
+  if (!global.layout.Areas) global.layout.Areas = {};
+  ['Floor 1','Floor 2','Floor 3'].forEach(f => {
+    if (!global.layout.Areas[f]) global.layout.Areas[f] = {};
+  });
+  // hide non-layout menus
+  home.style.display               = 'none';
+  floorSelect.style.display        = 'none';
+  surveyFloorSelect.style.display  = 'none';
+  multimenu.style.display          = 'none';
+  msurveyFloorSelect.style.display = 'none';
+  // show layout builder menu
+  layoutMenu.style.display         = 'block';
+});
+
+laySubmitBtn.addEventListener('click', () => {
+  // 1) show the map view
+  mapView.style.display        = 'block';
+
+  // 2) set the globals and redraw in layout-edit mode
+  window.sfloor       = parseInt(layFloorSelect.value, 10);
+  window.isLayoutEdit = true;
+  addMapPic();
+});
 
 
 

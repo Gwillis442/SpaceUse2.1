@@ -60,7 +60,7 @@
         </select>
         <button id="submitFloor">Choose Floor</button>
         <button id="saveFloor">Save Floor</button>
-        <button id="saveSurvey"> Submit Survery</button>
+        <button id="saveSurvey"> Submit Survey</button>
     </div>
     
     <!--FLOOR MENU FOR SURVEY VIEW-->
@@ -93,6 +93,7 @@
         <option value="2">Floor 2</option>
         <option value="3">Floor 3</option>
       </select>
+      <button id="laySubmitFloor">Choose Floor</button>
       <!--Make this Dynamic IN Future as a select with ICONS -->
       <select name="furniture-select" id="furn_icons">
         <option value="4">Rectangle Table </option>
@@ -122,7 +123,8 @@
       <button id="drawArea">Draw Area</button>
       <button id="saveLayFloor">Save Floor</button>
       <button id="saveLayout">Save Layout</button>
-              
+      <button id="loadSavedLayout">Load Saved Layout</button>
+
     </div>
 
     <!-- Survey Interface Load In Here-->
@@ -150,8 +152,8 @@
 
     <!-- You can also require other files to run in this process -->
     <!-- Require Javascript files here to be run alongside render process for processing data being added to global survey object-->
-    <script src="./renderer.js"></script>
     <script src="mapscripts/map_builder.js"></script>
+    <script src="./renderer.js"></script>
     <script src="mapscripts/map_helpers.js"></script>
     <script src="mapscripts/makerinPoly.js"></script>
     <script src="mapscripts/make_popup.js"></script>

@@ -111,11 +111,8 @@ ipcMain.on('SaveFurniture', function(event, furnMap, sfloor){
     case 2: curfloor = "Floor Two"; break;
     case 3: curfloor = "Floor Three"; break;
   }
-  //get floor data from furn map
-
-  let floorFurn = mapToObj(furnMap);
-
-  global.shared.surveyArray[sfloor][curfloor] = floorFurn;
+  // get floor data from furn object (sent as plain object)
+  global.shared.surveyArray[sfloor][curfloor] = furnMap;
 });
 
 ipcMain.on('layoutCreate', function(event){
@@ -132,6 +129,9 @@ ipcMain.on('layoutCreate', function(event){
 
 ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
   console.log("Saving Furn Map on floor: " + sfloor);
+  // reconstruct Map from serialized entries
+  const furnEntries = furnMap;
+  const layoutMap = new Map(furnEntries);
   var curfloor = "";
 
   switch(sfloor){
@@ -140,8 +140,8 @@ ipcMain.on('SaveLayoutFloor', function(event, furnMap, sfloor){
     case 3: curfloor = "Floor 3"; break;
   }
 
-  //floordata from furn map
-  for(let [key, value] of furnMap){
+  //floordata from furniture entries
+  for(let [key, value] of layoutMap){
     let furnString = "";
     let num_seats = parseInt(value.num_seats);
 
@@ -163,13 +163,23 @@ ipcMain.on('SaveLayout', ()=>{
   
   let data = global.shared.createLayout;
   let areadata = global.shared.areadata;
+  // Convert floor arrays into objects keyed by index for consistency with Layout1.json
+  const convertFloor = (floorArr) => {
+    const obj = {};
+    floorArr.forEach((item, idx) => { obj[idx] = item; });
+    return obj;
+  };
+  const floor1Obj = convertFloor(data[1]["Floor 1"]);
+  const floor2Obj = convertFloor(data[2]["Floor 2"]);
+  const floor3Obj = convertFloor(data[3]["Floor 3"]);
+  // Build final layout object
   let toconvert = { 
     "Layout": true,
-    "Floor 1": data[1]["Floor 1"],
-    "Floor 2": data[2]["Floor 2"],
-    "Floor 3": data[3]["Floor 3"],
+    "Floor 1": floor1Obj,
+    "Floor 2": floor2Obj,
+    "Floor 3": floor3Obj,
     "Areas": areadata["Areas"]
-  }
+  };
 
   let jsonObject = JSON.stringify(toconvert);
   let dpath = './Layouts/' + "NewLayout" + '.json'
@@ -459,3 +469,17 @@ ipcMain.on("toMain", (event, args) => {
 });
 
 */
+
+//Handle the IPC Renderer events for survey loading
+ipcMain.on('LoadSavedLayout', async function(event, data){
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+    title: 'Select a Layout JSON',
+    filters: [{ name: 'Layouts', extensions: ['json'] }],
+    properties: ['openFile']
+  });
+  if (canceled || filePaths.length === 0) return;
+
+  const raw = fs.readFileSync(filePaths[0], 'utf8');
+  const layoutJson = JSON.parse(raw);
+  event.sender.send('LoadSavedLayoutSuccess', layoutJson);
+});

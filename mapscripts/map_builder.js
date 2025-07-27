@@ -30,75 +30,11 @@ var CheckAllBtn = document.getElementById('checkall');
 var MinusBtn = document.getElementById('minus');
 var PlusBtn = document.getElementById('plus');
 
-
-//to store the seat_places array to be saved
-var temp_seat_places = [];
-
-const floorBtn = document.getElementById('submitFloor');
-const surveyfloorBtn = document.getElementById('subsurveyFloor');
-const msurveyfloorBtn = document.getElementById('msubsurveyFloor');
-const layoutfloorBtn = document.getElementById('layfloor');
-const layoutDrawBtn = document.getElementById('drawArea');
-const layoutSaveFloor = document.getElementById('saveLayFloor');
-const layoutSaveLay = document.getElementById('saveLayout');
-
-//Add Floor to Global JSON
-floorBtn.addEventListener('click', function (event){
-    event.preventDefault() // stop the form from submitting
-    sfloor = document.getElementById("floor").value;
-    isSurvey = false;
-    isMulti = false;
-    isLayoutEdit = false;
-    mapView.style.display = "block";
-    addMapPic();
-    //Add Furniture After Adding Items
-});
-
-surveyfloorBtn.addEventListener('click', function (event){
-    event.preventDefault()
-    isSurvey = true;
-    isMulti = false;
-    isLayoutEdit = false;
-    sfloor = document.getElementById("sfloor").value;
-    mapView.style.display = "block";
-    addMapPic();
-
-});
-
-msurveyfloorBtn.addEventListener('click', function (event){
-    event.preventDefault();
-    mapView.style.display = "block";
-    sfloor = document.getElementById('msfloor').value;
-    isMulti = true;
-    isSurvey = false;
-    isLayoutEdit = false;
-    addMapPic();
-});
-
-layoutfloorBtn.addEventListener('click', function(event){
-    event.preventDefault();
-    mapView.style.display = "block";
-    sfloor = document.getElementById('layfloor').value;
-    isLayoutEdit = true;
-    isSurvey = false;
-    isMulti = false;
-    addMapPic();
-});
-
-layoutDrawBtn.addEventListener('click', function(event){
-    event.preventDefault();
-    var backcolor = layoutDrawBtn.style.backgroundColor;
-
-    if(backcolor !== 'green'){
-        layoutDrawBtn.style.backgroundColor = 'green';
-    } else {
-        layoutDrawBtn.style.backgroundColor = 'salmon';
-    }
-    areaMaker();
-});
+// expose addMapPic to renderer
+window.addMapPic = addMapPic;
 
 function reinializePop(){
-	let obj = document.getElementById('MapContainer');
+    let obj = document.getElementById('MapContainer');
     obj.insertAdjacentHTML('afterend', '<div id="popup"><div id="seat_div"></div><div id="wb_div"></div><button id="save" style="display:none">Save and Exit</button><button id="lock">Unlock</button><button id="checkall" style="display:none">Check All</button><label id="seat_operator"></label><button id="minus" style="display:none">-</button><button id="plus" style="display:none">+</button></div>');
     let popup= document.getElementById('popup');
 
@@ -207,13 +143,13 @@ var surveyPopDim =
 
 //extend the marker class to add furniture data
 var marker = L.Marker.extend({
-	options: {
-		fid: 0,
-		ftype: "default ftype",
-		degreeOffset: 0,
-		numSeats: 0,
-		defaultSeat: "default seat"
-	}
+    options: {
+        fid: 0,
+        ftype: "default ftype",
+        degreeOffset: 0,
+        numSeats: 0,
+        defaultSeat: "default seat"
+    }
 });
 
 //Create the boundries for placing furniture
@@ -278,12 +214,12 @@ function Furniture(fid, num_seats){
     this.y;
     this.ftype;
     this.avgUseRatio;
-	this.avgOccupancy;
-	this.sumOccupants;
-	this.modified_count;
-	this.mod_array;
-	this.activities;
-	this.arrOccupants = [];
+    this.avgOccupancy;
+    this.sumOccupants;
+    this.modified_count;
+    this.mod_array;
+    this.activities;
+    this.arrOccupants = [];
     this.peakuse;
     this.peakPop = 0;
 }
@@ -308,94 +244,39 @@ function Area(area_id, facilites_id, area_name){
     this.totalOccupants = 0;
     this.totalSeats = 0;
     this.avgPopArea = 0;
-	this.avgRatio = 0;
-	this.totalSeatsUsed = 0;
-	this.peakPop = 0;
-	this.peakSurvey = 0;
-	this.peakDate = 0;
+    this.avgRatio = 0;
+    this.totalSeatsUsed = 0;
+    this.peakPop = 0;
+    this.peakSurvey = 0;
+    this.peakDate = 0;
 }
 
 function AreaVertices(x,y){
     this.x = x;
     this.y = y;
 }
+//Create markers for layout editing
+function build_layout_markers(furnitureArray){
+    furnMap.clear();
+    drawnItems.clearLayers();
+    furnitureArray.forEach(furn => {
+        let icon = getIconObj(parseInt(furn.ftype));
+        let m = L.marker([furn.y, furn.x], {
+            icon: icon,
+            rotationAngle: furn.degree_offset,
+            rotationOrigin: "center",
+            draggable: true,
+            fid: furn.furn_id
+        }).addTo(drawnItems);
+        m.on('click', markerLayClick);
+        furn.marker = m;
+        furnMap.set(furn.furn_id, furn);
+    });
+}
 
 //pass information from the layout to build the markers after loading layout file
-function build_markers(furnitureArray){
 
-    furnMap.clear();
-
-    //define array of furniture to build markers from based on passed layout ID
-    for(var i in furnitureArray){
-
-        //prebuild furniture array in the form of furniture objects to add to the map
-
-        var key = furnitureArray[i];
-        var furn_id = key.furn_id;
-
-        var num_seats = parseInt(key.num_seats);
-        //var newFurn = new Furniture(furn_id, num_seats);
-
-        var x = key.x;
-        var y = key.y;
-        var degree_offset = key.degree_offset;
-        var furniture_type = key.ftype;
-        var seat_type = key.seat_type;
-
-        var latlng = [y,x];
-
-        //parse furniture type to an int, then get the correct icon
-        var type =  parseInt(furniture_type);
-
-        var sicon = getIconObj(type);
-
-        //initalize pointer to popup div
-        var popup = document.getElementById("popup");
-
-
-        //place a marker for each furniture item
-        marker = L.marker(latlng, {
-            icon: sicon,
-            rotationAngle: degree_offset,
-            rotationOrigin: "center",
-            draggable: false,
-            ftype: furniture_type,
-            numSeats: num_seats,
-            fid: furn_id.toString()
-        }).addTo(furnitureLayer).bindPopup(popup, popupDim);
-
-        //make marker clickable
-        marker.on('click', markerClick);
-        marker.setOpacity(.6);
-
-        //update marker coords when a user stops dragging the marker, set to furniture object to indicate modified
-        marker.on("dragend", function(e){
-            selected_furn.modified = true;
-            latlng =  e.target.getLatLng();
-
-            selected_furn.latlng = latlng;
-            y = latlng.lat;
-            x = latlng.lng;
-            area_id="TBD";
-            selected_furn.y = y;
-            selected_furn.x = x;
-            areaMap.forEach(function(jtem, key, mapObj){
-                
-                if(isMarkerInsidePolygon(y, x, jtem.polyArea)){
-                    area_id = jtem.area_id;
-                }
-            });
-            if(area_id !== "TBD"){
-                selected_furn.in_area = area_id;
-            }
-        });
-
-        //add furniture to the datamap to capture input information from data
-        furnMap.set(furn_id.toString(), key);
-    }
-
-    mymap.invalidateSize();
-}
+// Correct build_layout_markers defined above; remove this stray duplicate definition
 
 function display_survey(surveyArray){
 
@@ -516,6 +397,13 @@ function display_survey(surveyArray){
 
 //Add Image of Map to div
 function addMapPic(){
+    // sync local flags and floor from renderer.js globals
+    sfloor = window.sfloor;
+    isSurvey = window.isSurvey;
+    isMulti = window.isMulti;
+    isLayoutEdit = window.isLayoutEdit;
+    console.log("addMapPic: sfloor=", sfloor, "isLayoutEdit=", isLayoutEdit, "imagepath=", imagepath);
+    console.log("global.layout keys:", Object.keys(global.layout));
     //remove old floor imagepath and place newly selected floor imagepath
     if(image != undefined){
         mymap.removeLayer(image);
@@ -633,13 +521,50 @@ function addMapPic(){
             display_survey(surv_array);
         }
         else if(isLayoutEdit === true){
+            console.log("Layout edit branch: sfloorName=Floor "+sfloor);
+            const floorKey = "Floor " + sfloor;
+            const areasObj = (global.layout && global.layout.Areas) || {};
+            const areaDataLog = areasObj[floorKey] || {};
+            console.log("Areas data:", areaDataLog);
+            const furnDataLog = (global.layout && global.layout[floorKey]) || [];
+            console.log("Furniture data:", furnDataLog);
             areaMap.clear();
-            furnMap.clear();
-            mymap.removeLayer(drawnItems);
-            drawnItems = new L.layerGroup().addTo(mymap);
-            loadAreas();
-            mymap.invalidateSize();
+                furnMap.clear();
+                if(drawnItems) mymap.removeLayer(drawnItems);
+                drawnItems = new L.layerGroup().addTo(mymap);
 
+                // 2) draw saved Areas
+                let sfloorName = floorKey;
+                let areaData = areasObj[sfloorName] || {};
+        for (let aKey in areaData) {
+            let a = areaData[aKey];
+            let areaObj = new Area(aKey, a.facilities_id, a.name);
+            // a.points is an object; iterate its keys
+            for (let ptKey in a.points) {
+                let pt = a.points[ptKey];
+                areaObj.area_vertices.push(new AreaVertices(pt.v_x, pt.v_y));
+            }
+            let poly = drawArea(areaObj);
+            areaObj.polyArea = poly;
+            areaMap.set(aKey, areaObj);
+            poly.addTo(drawnItems);
+        }
+
+                // 3) draw saved furniture
+                let furnData = (global.layout && global.layout[sfloorName]) || [];
+                let layoutItems = [];
+                for(let idx in furnData){
+                    let f = furnData[idx];
+                    let obj = new Furniture(f.fid, f.num_seats);
+                    obj.x = f.x;
+                    obj.y = f.y;
+                    obj.ftype = f.ftype;
+                    obj.degree_offset = f.degree_offset;
+                    layoutItems.push(obj);
+                }
+                build_layout_markers(layoutItems);
+
+                mymap.invalidateSize();
         }
         else{
             let floordata = global.layout[sfloor][1];
@@ -673,7 +598,7 @@ function addMapPic(){
                 furn.ftype = floordata[i].ftype;
                 furn.degree_offset = floordata[i].degree_offset;
                 areaMap.forEach(function(jtem, jkey, mapObj){
-				
+                
                     if(isMarkerInsidePolygon(furn.y, furn.x, jtem.polyArea)){
                         furn.area_id = jtem.area_id;
                     }
@@ -714,55 +639,55 @@ function addMapPic(){
 }
 
 function drawArea(area){
-	var verts = [];
+    var verts = [];
 
-	for(var i=0; i < area.area_vertices.length; i++){
-		area_verts = area.area_vertices[i];
-		verts.push([area_verts.x,area_verts.y]);
-	}
-	var poly = L.polygon(verts);
+    for(var i=0; i < area.area_vertices.length; i++){
+        area_verts = area.area_vertices[i];
+        verts.push([area_verts.x,area_verts.y]);
+    }
+    var poly = L.polygon(verts);
     if(isLayoutEdit === false){
         poly.bindPopup(area.area_name);
     }
-	
+    
 
-	return poly;
+    return poly;
 }
 
 function isMarkerInsidePolygon(x,y, poly) {
-	var inside = false;
-	for (var ii=0;ii<poly.getLatLngs().length;ii++){
-		var polyPoints = poly.getLatLngs()[ii];
-		for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
-			var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
-			var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
+    var inside = false;
+    for (var ii=0;ii<poly.getLatLngs().length;ii++){
+        var polyPoints = poly.getLatLngs()[ii];
+        for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
+            var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
+            var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
 
-			var intersect = ((yi > y) != (yj > y))
-				&& (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-			if (intersect) inside = !inside;
-		}
-	}
+            var intersect = ((yi > y) != (yj > y))
+                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+    }
 
-	return inside;
+    return inside;
 }
 
 function updateHelper(){
-	var outString="";
-	
-	furnMap.forEach(function(item, key, mapObj){
-		aid = "TBD";
-		x = item.x;
-		y = item.y;
-		areaMap.forEach(function(jtem, jkey, mapObj){
-				
-			if(isMarkerInsidePolygon(y, x, jtem.polyArea)){
-				aid = jtem.area_id;
-			}
-		});
-		if(area_id !== "TBD"){
-			item.in_area = aid;
-		}
+    var outString="";
+    
+    furnMap.forEach(function(item, key, mapObj){
+        aid = "TBD";
+        x = item.x;
+        y = item.y;
+        areaMap.forEach(function(jtem, jkey, mapObj){
+                
+            if(isMarkerInsidePolygon(y, x, jtem.polyArea)){
+                aid = jtem.area_id;
+            }
+        });
+        if(area_id !== "TBD"){
+            item.in_area = aid;
+        }
         outString+= updateFurn(item);
-		outString+="\n";
-	});
+        outString+="\n";
+    });
 }

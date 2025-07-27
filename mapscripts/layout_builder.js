@@ -38,7 +38,16 @@ function areaMaker(e){
 function markerLayClick(e){
     //when a marker is clicked, it should be rotatable, and delete able
     selected_marker = this;
-    selected_furn = furnMap.get(selected_marker.options.fid);
+    // retrieve furniture object by marker ID, with fallback
+    // retrieve furniture object by marker ID (convert to number)
+    let fid = selected_marker.options.fid;
+    if (typeof fid === 'string') fid = parseInt(fid, 10);
+    selected_furn = furnMap.get(fid);
+    if (!selected_furn) {
+        console.warn('Furniture not found for id', fid);
+        // fallback object to avoid undefined errors
+        selected_furn = { ftype: selected_marker.options.ftype || 'Unknown', num_seats: 0, degreeOffset: 0 };
+    }
     //make sure the nameDiv is created and attached to popup
     if(document.getElementById("nameDiv") == null){
         var nameDiv = document.createElement("div");
@@ -47,7 +56,7 @@ function markerLayClick(e){
     }
     //set the nameDiv to the name of the current furniture
     var nameDiv = document.getElementById("nameDiv");
-    nameDiv.innerHTML = "<strong>Type: </strong>"+selected_furn.ftype+"</br></br>";
+    nameDiv.innerHTML = "<strong>Type: </strong>" + selected_furn.ftype + "</br></br>";
 
     if(document.getElementById("deleteButtonDiv") == null) {
         //create a div to hold delete marker button
@@ -192,8 +201,8 @@ function createFurnObj(ftype, lat, lng, coord){
 //Deletes the selected marker
 function deleteHelper()
 {
-	mymap.removeLayer(selected_marker);
-	furnMap.delete(selected_furn.furn_id);
+    mymap.removeLayer(selected_marker);
+    furnMap.delete(selected_furn.furn_id);
 }
 
 function seatAddHelper(thisFurn){
@@ -225,39 +234,39 @@ function seatAddHelper(thisFurn){
 //This function helps rotate the furniture and appends the div after the furniture has been rotated.
 function rotateHelper(parentDiv)
 {
-	if(document.getElementById("rotateSlider") == null)
-	{
-		var rotateSlider = document.createElement("input");
-		rotateSlider.type = "range";
-		rotateSlider.min = "-180";
-		rotateSlider.max = "180";
-		rotateSlider.value = "0";
-		rotateSlider.step = "10";
-		rotateSlider.id = "rotateSlider";
-		rotateSlider.value = selected_furn.degreeOffset;
-		
-		var sliderValue = document.createElement("p");
-		sliderValue.id = "sliderValue";
-		sliderValue.innerText = "Value: "+selected_furn.degreeOffset;
-		
-		document.getElementById(parentDiv).appendChild(sliderValue);
-		document.getElementById(parentDiv).appendChild(rotateSlider);
-	
-			
-		rotateSlider.oninput = function()
-		{
-			selected_marker.setRotationOrigin("center");
-			selected_furn.degreeOffset =rotateSlider.value;
-			selected_marker.options.degree_offset = rotateSlider.value;
-			selected_marker.setRotationAngle(rotateSlider.value);
-			sliderValue.innerText = "Value: " + rotateSlider.value;
-		}
-	}
-	
-	else
-	{
-		document.getElementById("rotateSlider").remove();
-		document.getElementById("sliderValue").remove();
-	}
+    if(document.getElementById("rotateSlider") == null)
+    {
+        var rotateSlider = document.createElement("input");
+        rotateSlider.type = "range";
+        rotateSlider.min = "-180";
+        rotateSlider.max = "180";
+        rotateSlider.value = "0";
+        rotateSlider.step = "10";
+        rotateSlider.id = "rotateSlider";
+        rotateSlider.value = selected_furn.degreeOffset;
+        
+        var sliderValue = document.createElement("p");
+        sliderValue.id = "sliderValue";
+        sliderValue.innerText = "Value: "+selected_furn.degreeOffset;
+        
+        document.getElementById(parentDiv).appendChild(sliderValue);
+        document.getElementById(parentDiv).appendChild(rotateSlider);
+    
+            
+        rotateSlider.oninput = function()
+        {
+            selected_marker.setRotationOrigin("center");
+            selected_furn.degreeOffset =rotateSlider.value;
+            selected_marker.options.degree_offset = rotateSlider.value;
+            selected_marker.setRotationAngle(rotateSlider.value);
+            sliderValue.innerText = "Value: " + rotateSlider.value;
+        }
+    }
+    
+    else
+    {
+        document.getElementById("rotateSlider").remove();
+        document.getElementById("sliderValue").remove();
+    }
 
 }
